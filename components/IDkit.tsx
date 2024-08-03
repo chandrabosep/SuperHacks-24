@@ -1,15 +1,15 @@
 "use client";
-import { verify } from "@/actions/verify";
-import {
-	IDKitWidget,
-	ISuccessResult,
-	useIDKit,
-	VerificationLevel,
-} from "@worldcoin/idkit";
 
-export default function IDKit() {
+import { verify } from "@/actions/verify";
+import { VerificationLevel, IDKitWidget, useIDKit } from "@worldcoin/idkit";
+import type { ISuccessResult } from "@worldcoin/idkit";
+import { useRouter } from "next/navigation";
+
+export default function Home() {
 	const app_id = process.env.NEXT_PUBLIC_WLD_APP_ID as `app_${string}`;
 	const action = process.env.NEXT_PUBLIC_WLD_ACTION;
+
+	const router = useRouter();
 
 	if (!app_id) {
 		throw new Error("app_id is not set in environment variables!");
@@ -21,11 +21,7 @@ export default function IDKit() {
 	const { setOpen } = useIDKit();
 
 	const onSuccess = (result: ISuccessResult) => {
-		// This is where you should perform frontend actions once a user has been verified, such as redirecting to a new page
-		window.alert(
-			"Successfully verified with World ID! Your nullifier hash is: " +
-				result.nullifier_hash
-		);
+		// router.push("/submit-project");
 	};
 
 	const handleProof = async (result: ISuccessResult) => {
@@ -38,26 +34,30 @@ export default function IDKit() {
 			console.log(
 				"Successful response from backend:\n",
 				JSON.stringify(data)
-			); // Log the response from our backend for visibility
+			);
 		} else {
 			throw new Error(`Verification failed: ${data.detail}`);
 		}
 	};
+
 	return (
-		<>
-			<IDKitWidget
-				action={action}
-				app_id={app_id}
-				onSuccess={onSuccess}
-				handleVerify={handleProof}
-				verification_level={VerificationLevel.Orb}
-			/>
-			<button
-				className="border border-black rounded-md"
-				onClick={() => setOpen(true)}
-			>
-				<div className="mx-3 my-1">Verify with World ID</div>
-			</button>
-		</>
+		<div>
+			<div className="flex flex-col items-center justify-center align-middle h-screen">
+				<p className="text-2xl mb-5">World ID Cloud Template</p>
+				<IDKitWidget
+					action={action}
+					app_id={app_id}
+					onSuccess={onSuccess}
+					handleVerify={handleProof}
+					verification_level={VerificationLevel.Device} // Change this to VerificationLevel.Device to accept Orb- and Device-verified users
+				/>
+				<button
+					className="border border-black rounded-md"
+					onClick={() => setOpen(true)}
+				>
+					<div className="mx-3 my-1">Verify with World ID</div>
+				</button>
+			</div>
+		</div>
 	);
 }
