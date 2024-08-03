@@ -1,0 +1,11 @@
+{
+  "name": "SuperHacks-24",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/chandrabosep/SuperHacks-24.git",
+  "author": "Mujahid002 <mujahidshaik2002@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2"
+  }
+}
