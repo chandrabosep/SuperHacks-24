@@ -3,7 +3,9 @@
 import { verify } from "@/actions/verify";
 import { VerificationLevel, IDKitWidget, useIDKit } from "@worldcoin/idkit";
 import type { ISuccessResult } from "@worldcoin/idkit";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { dmSans } from "./Fonts";
 
 export default function Home() {
 	const app_id = process.env.NEXT_PUBLIC_WLD_APP_ID as `app_${string}`;
@@ -41,23 +43,31 @@ export default function Home() {
 	};
 
 	return (
-		<div>
-			<div className="flex flex-col items-center justify-center align-middle h-screen">
-				<p className="text-2xl mb-5">World ID Cloud Template</p>
-				<IDKitWidget
-					action={action}
-					app_id={app_id}
-					onSuccess={onSuccess}
-					handleVerify={handleProof}
-					verification_level={VerificationLevel.Device} // Change this to VerificationLevel.Device to accept Orb- and Device-verified users
-				/>
-				<button
-					className="border border-black rounded-md"
-					onClick={() => setOpen(true)}
+		<>
+			<IDKitWidget
+				action={action}
+				app_id={app_id}
+				onSuccess={onSuccess}
+				handleVerify={handleProof}
+				verification_level={VerificationLevel.Device}
+			/>
+			<button
+				className=" bg-black text-white rounded w-fit"
+				onClick={() => setOpen(true)}
+			>
+				<div
+					className={`${dmSans.className} flex items-center px-6 p-3 gap-x-6 text-lg font-medium`}
 				>
-					<div className="mx-3 my-1">Verify with World ID</div>
-				</button>
-			</div>
-		</div>
+					<Image
+						src="/worldcoin.svg"
+						alt="alt"
+						width={500}
+						height={500}
+						className="size-6"
+					/>
+					Verify with World ID
+				</div>
+			</button>
+		</>
 	);
 }
