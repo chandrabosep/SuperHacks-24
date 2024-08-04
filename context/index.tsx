@@ -19,7 +19,8 @@ createWeb3Modal({
 	metadata,
 	wagmiConfig: config,
 	projectId,
-	enableAnalytics: true, // Optional - defaults to your Cloud configuration
+	enableAnalytics: true,
+	themeMode: "light",
 });
 
 export default function Web3ModalProvider({

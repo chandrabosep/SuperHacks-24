@@ -7,6 +7,7 @@ import { cookieToInitialState } from "wagmi";
 import { config } from "@/config";
 import Web3ModalProvider from "@/context";
 import { gtText } from "@/components/Fonts";
+import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
 	title: "Create Next App",
@@ -23,7 +24,8 @@ export default function RootLayout({
 		<html lang="en">
 			<body className={gtText.className}>
 				<Web3ModalProvider initialState={initialState}>
-					{children}
+					<Navbar />
+					<div className="py-6">{children}</div>
 				</Web3ModalProvider>
 			</body>
 		</html>
