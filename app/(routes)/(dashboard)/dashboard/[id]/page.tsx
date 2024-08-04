@@ -2,6 +2,7 @@ import { gtHead } from "@/components/Fonts";
 import ProjectCard from "@/components/ProjectCard";
 import React from "react";
 import ThemeButton from "@/components/Button";
+import Link from "next/link";
 
 export default function page() {
 	return (
@@ -13,7 +14,9 @@ export default function page() {
 					>
 						Dashboard
 					</h2>
-					<ThemeButton>Submit project</ThemeButton>
+					<Link href="/create-project">
+						<ThemeButton>Submit project</ThemeButton>
+					</Link>
 				</div>
 				<div className="flex items-center">
 					<ProjectCard />
