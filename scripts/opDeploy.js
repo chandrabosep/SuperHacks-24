@@ -25,13 +25,13 @@ async function main() {
   console.log("----------------------------------------------------------");
 
   // Transfer Ownership
-  console.log("Transferring ownership...");
+  // console.log("Transferring ownership...");
 
-  const seedSphereInstance = await seedSphere.attach(seedSphereAddress);
-  const transferTx = await seedSphereInstance.transferOwnership(
-    newOwnerAddress
-  );
-  await transferTx.wait();
+  // const seedSphereInstance = await seedSphere.attach(seedSphereAddress);
+  // const transferTx = await seedSphereInstance.transferOwnership(
+  //   newOwnerAddress
+  // );
+  // await transferTx.wait();
   console.log("Ownership transferred to:", newOwnerAddress);
   console.log("----------------------------------------------------------");
 
