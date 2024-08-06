@@ -19,7 +19,7 @@ export default function page() {
 					</Link>
 				</div>
 				<div className="flex items-center">
-					<ProjectCard />
+					{ true ? <ProjectCard /> : "No projects yet" }
 				</div>
 			</div>
 			<div className="flex flex-col py-4 gap-y-16">

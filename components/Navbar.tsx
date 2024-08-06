@@ -16,12 +16,15 @@ export default function Navbar() {
 	const { isConnected } = useAccount();
 	return (
 		<div className="flex items-center justify-between py-4 border-b border-theme-secondary/30">
-			<Link href="/"
+			<Link
+				href="/"
 				className={`${major.className} text-3xl font-black bg-theme-accent p-2 px-4 border border-theme-secondary/20`}
 			>
-				BlockFund
+				SeedSphere
 			</Link>
-			<div className={`${gtSideHead.className} flex gap-10 text-lg font-medium tracking-wide`}>
+			<div
+				className={`${gtSideHead.className} flex gap-10 text-lg font-medium tracking-wide`}
+			>
 				{isConnected && (
 					<Link href="/dashboard/1" className="">
 						Dashboard
