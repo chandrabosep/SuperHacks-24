@@ -9,7 +9,6 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {IPyth} from "@pythnetwork/pyth-sdk-solidity/IPyth.sol";
 import {PythStructs} from "@pythnetwork/pyth-sdk-solidity/PythStructs.sol";
-import {PythUtils} from "@pythnetwork/pyth-sdk-solidity/PythUtils.sol";
 
 /// @notice Custom errors for the SeedSphere contract
 error SeedSphere__InvalidAddress();
@@ -23,6 +22,8 @@ error SeedSphere__InvalidRandomNumber();
 error SeedSphere__PoolFundsZero();
 error SeedSphere__FeeTooLow();
 error SeedSphere__InsufficientFunds();
+error SeedSphere__TransferFailed();
+error SeedSphere__StalePrice();
 
 /// @title SeedSphere Contract
 /// @notice This contract allows funding projects and pooling funds among users, utilizing Pyth for price feeds.
@@ -48,9 +49,8 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     /// @notice Instance of the IPyth contract
     IPyth private s_pyth;
 
-    /// @notice Price feed ID for ETH/USD
-    bytes32 private s_priceFeedId =
-        0x385f64d993f7b77d8182ed5003d97c60aa3361f3cecfe711544d2d59165e9bdf;
+    /// @notice Price feed ID for NATIVE/USD
+    bytes32 private s_priceFeedId;
 
     /// @notice Event emitted when funds are added
     event Funded(address indexed funder, uint256 amount, uint256 tokenId);
@@ -66,6 +66,9 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
 
     /// @notice Event emitted when a user withdraws funds
     event FundsWithdrawn(address indexed user, uint256 amount);
+
+    /// @notice Event emitted when the pool status is changed
+    event PoolStatusChanged(bool isActive);
 
     /// @notice Constructor to initialize the SeedSphere contract
     /// @param pythContract_ Address of the Pyth contract
@@ -93,46 +96,28 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
         uint256 numUsers = userAddresses.length;
         if (numUsers == 0) revert SeedSphere__NoUsersProvided();
 
-        // Get the update fee from Pyth
-        uint256 fee = s_pyth.getUpdateFee(priceUpdate);
-
         // Update the price feeds
-        s_pyth.updatePriceFeeds{value: fee}(priceUpdate);
+        uint256 basePrice = _updatePythPriceFeeds(priceUpdate);
 
-        // Fetch the current price of ETH in USD
-        PythStructs.Price memory currentPrice = s_pyth.getPrice(s_priceFeedId);
-
-        // Convert the price to a uint with 18 decimals
-        uint256 basePrice = PythUtils.convertToUint(
-            currentPrice.price,
-            currentPrice.expo,
-            18
-        );
-
-        uint256 totalDeposits = msg.value - fee;
+        uint256 totalDeposits = msg.value - s_pyth.getUpdateFee(priceUpdate);
         if (totalDeposits == 0) revert SeedSphere__TotalDepositTooLow();
 
         uint256 depositPerUser = totalDeposits / numUsers;
         if (depositPerUser == 0) revert SeedSphere__DepositPerUserTooLow();
 
-        // Calculate the USD equivalent of the deposit per user
-        uint256 amountInUSD = (depositPerUser * basePrice) / 10**18;
+        // Calculate the USD equivalent of the total deposit
+        uint256 totalAmountInUSD = (totalDeposits * basePrice) / 10**18;
+        if (totalAmountInUSD == 0) revert SeedSphere__DepositAmountTooLow();
 
-        if (amountInUSD == 0) revert SeedSphere__DepositAmountTooLow();
-        uint256 tokenId;
-        if (checkFunderHaveId(_msgSender())) {
-            tokenId = s_funderIds[_msgSender()];
-        } else {
-            tokenId = s_currentTokenId;
-            s_currentTokenId += 1;
-        }
+        uint256 tokenId = _assignTokenId(_msgSender());
 
         for (uint256 i = 0; i < numUsers; ++i) {
             if (getUserProposalHash(userAddresses[i]) == bytes32(0))
                 revert SeedSphere__UserHasNoActiveProposal();
             s_userFunds[userAddresses[i]] += depositPerUser;
-            _mint(_msgSender(), tokenId, amountInUSD, "");
         }
+
+        _mint(_msgSender(), tokenId, totalAmountInUSD, "");
 
         emit Funded(_msgSender(), totalDeposits, tokenId);
     }
@@ -146,36 +131,19 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     {
         if (!s_poolActive) revert SeedSphere__PoolNotActive();
 
-        // Get the update fee from Pyth
-        uint256 fee = s_pyth.getUpdateFee(priceUpdate);
-
         // Update the price feeds
-        s_pyth.updatePriceFeeds{value: fee}(priceUpdate);
+        uint256 basePrice = _updatePythPriceFeeds(priceUpdate);
 
-        // Fetch the current price of ETH in USD
-        PythStructs.Price memory currentPrice = s_pyth.getPrice(s_priceFeedId);
-
-        // Convert the price to a uint with 18 decimals
-        uint256 basePrice = PythUtils.convertToUint(
-            currentPrice.price,
-            currentPrice.expo,
-            18
-        );
-
-        uint256 totalDeposits = msg.value - fee;
+        uint256 totalDeposits = msg.value - s_pyth.getUpdateFee(priceUpdate);
 
         s_poolFunds += totalDeposits;
+
         // Calculate the USD equivalent of the sent ETH amount
         uint256 amountInUSD = (totalDeposits * basePrice) / 10**18;
 
         if (amountInUSD == 0) revert SeedSphere__DepositAmountTooLow();
-        uint256 tokenId;
-        if (checkFunderHaveId(_msgSender())) {
-            tokenId = s_funderIds[_msgSender()];
-        } else {
-            tokenId = s_currentTokenId;
-            s_currentTokenId += 1;
-        }
+
+        uint256 tokenId = _assignTokenId(_msgSender());
 
         _mint(_msgSender(), tokenId, amountInUSD * 2, "");
 
@@ -189,6 +157,8 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
         address proposalUserAddress,
         bytes32 proposalHash
     ) public onlyOwner {
+        if (proposalUserAddress == address(0))
+            revert SeedSphere__InvalidAddress();
         s_userProposalHashes[proposalUserAddress] = proposalHash;
         emit ProjectAdded(proposalUserAddress, proposalHash);
     }
@@ -217,7 +187,7 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
 
         s_userFunds[_msgSender()] = 0;
         (bool success, ) = _msgSender().call{value: userBalance}("");
-        require(success, "Transfer failed");
+        if (!success) revert SeedSphere__TransferFailed();
 
         emit FundsWithdrawn(_msgSender(), userBalance);
     }
@@ -236,11 +206,13 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     /// @param _poolActive Boolean indicating if the pool is active or not
     function setPoolActive(bool _poolActive) external onlyOwner {
         s_poolActive = _poolActive;
+        emit PoolStatusChanged(_poolActive); // Emit an event for pool status change
     }
 
     /// @notice Activates the pool
     function activatePool() public onlyOwner {
         s_poolActive = true;
+        emit PoolStatusChanged(true);
     }
 
     /// @notice Updates the Pyth contract address
@@ -327,7 +299,48 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     /*****************************
-        GETTER FUNCTIONS
+        INTERNAL FUNCTIONS
+    ******************************/
+
+    /// @notice Internal function to update Pyth price feeds and get the current price
+    /// @param priceUpdate Array of price update data from Pyth
+    /// @return oneDollarInWei The amount of Wei equivalent to one USD
+    function _updatePythPriceFeeds(bytes[] calldata priceUpdate)
+        private
+        returns (uint256 oneDollarInWei)
+    {
+        uint256 fee = s_pyth.getUpdateFee(priceUpdate);
+        s_pyth.updatePriceFeeds{value: fee}(priceUpdate);
+        PythStructs.Price memory price = s_pyth.getPrice(s_priceFeedId);
+
+        // Ensure the price data is recent
+        if (block.timestamp - price.publishTime > s_pyth.getValidTimePeriod()) {
+            revert SeedSphere__StalePrice();
+        }
+
+        // Convert the price to 18 decimal places
+        uint256 ethPrice18Decimals = (uint256(uint64(price.price)) * (10**18)) /
+            (10**uint8(uint32(-1 * price.expo)));
+
+        // Calculate the Wei amount equivalent to one USD
+        oneDollarInWei = ((10**18) * (10**18)) / ethPrice18Decimals;
+        return oneDollarInWei;
+    }
+
+    /// @notice Internal function to assign a token ID to a funder
+    /// @param funder Address of the funder
+    /// @return tokenId The assigned token ID
+    function _assignTokenId(address funder) private returns (uint256 tokenId) {
+        if (checkFunderHaveId(funder)) {
+            tokenId = s_funderIds[funder];
+        } else {
+            tokenId = s_currentTokenId++;
+            s_funderIds[funder] = tokenId;
+        }
+    }
+
+    /*****************************
+        OVERRIDE FUNCTIONS
     ******************************/
 
     /// @dev Override required by Solidity for multiple inheritance
