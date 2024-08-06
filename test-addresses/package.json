@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@alch/alchemy-web3": "^1.4.7",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "dotenv": "^16.4.5",
     "hardhat": "^2.22.6"
