@@ -1,5 +1,6 @@
 /** @type import('hardhat/config').HardhatUserConfig */
-
+require("@nomicfoundation/hardhat-toolbox");
+require("dotenv").config();
 const {
   API_URL_CELO_ALFAJORES,
   API_URL_OPTIMISM_SEPOLIA,
@@ -14,28 +15,28 @@ module.exports = {
   networks: {
     celoAlfajores: {
       url: API_URL_CELO_ALFAJORES,
-      accounts: [PRIVATE_KEY],
+      accounts: [`0x${PRIVATE_KEY}`],
       chainId: 44787,
       timeout: 50000,
       confirmations: 2,
     },
     optimismSepolia: {
       url: API_URL_OPTIMISM_SEPOLIA,
-      accounts: [PRIVATE_KEY],
+      accounts: [`0x${PRIVATE_KEY}`],
       chainId: 11155420,
       timeout: 50000,
       confirmations: 2,
     },
     baseSepolia: {
       url: API_URL_BASE_SEPOLIA,
-      accounts: [PRIVATE_KEY],
+      accounts: [`0x${PRIVATE_KEY}`],
       chainId: 84532,
       timeout: 50000,
       confirmations: 2,
     },
     modeSepolia: {
       url: API_URL_MODE_SEPOLIA,
-      accounts: [PRIVATE_KEY],
+      accounts: [`0x${PRIVATE_KEY}`],
       chainId: 84532,
       timeout: 50000,
       confirmations: 2,
