@@ -10,5 +10,5 @@
 ## PriceFeed IDs 
 1. Celo Alfajores: 0x7d669ddcdd23d9ef1fa9a9cc022ba055ec900e91c4cb960f3c20429d4447a411
 2. Optimism Sepolia: 0x385f64d993f7b77d8182ed5003d97c60aa3361f3cecfe711544d2d59165e9bdf
-3. Base Sepolia: 0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace
-4. Mode Sepolia: 
+3. Base Sepolia: 
+4. Mode Sepolia: 0x0386e113cc716a7c6a55decd97b19c90ce080d9f2f5255ac78a0e26889446d1e
