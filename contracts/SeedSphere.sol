@@ -22,6 +22,7 @@ error SeedSphere__InvalidRandomNumber();
 error SeedSphere__PoolFundsZero();
 error SeedSphere__FeeTooLow();
 error SeedSphere__InsufficientFunds();
+error SeedSphere__TransferFailed();
 
 /// @title SeedSphere Contract
 /// @notice This contract allows funding projects and pooling funds among users, utilizing Pyth for price feeds.
@@ -120,9 +121,9 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable {
         if (amountInUSD == 0) revert SeedSphere__DepositAmountTooLow();
         uint256 tokenId;
         if (checkFunderHaveId(_msgSender())) {
-            tokenId = s_funderIds[_msgSender()];
+            tokenId = getFunderId(_msgSender());
         } else {
-            tokenId = s_currentTokenId;
+            tokenId = getCurrentTokenId();
             s_currentTokenId += 1;
         }
 
@@ -130,7 +131,7 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable {
             if (getUserProposalHash(userAddresses[i]) == bytes32(0))
                 revert SeedSphere__UserHasNoActiveProposal();
             s_userFunds[userAddresses[i]] += depositPerUser;
-            _mint(_msgSender(), tokenId, amountInUSD, "");
+            _mint(_msgSender(), tokenId, depositPerUser, "");
         }
 
         emit Funded(_msgSender(), totalDeposits, tokenId);
@@ -159,16 +160,16 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable {
 
         uint256 totalDeposits = msg.value - fee;
 
-        s_poolFunds += totalDeposits;
         // Calculate the USD equivalent of the sent ETH amount
         uint256 amountInUSD = (totalDeposits * basePrice) / 10**18;
 
         if (amountInUSD == 0) revert SeedSphere__DepositAmountTooLow();
+        s_poolFunds += totalDeposits;
         uint256 tokenId;
         if (checkFunderHaveId(_msgSender())) {
-            tokenId = s_funderIds[_msgSender()];
+            tokenId = getFunderId(_msgSender());
         } else {
-            tokenId = s_currentTokenId;
+            tokenId = getCurrentTokenId();
             s_currentTokenId += 1;
         }
 
@@ -212,7 +213,7 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable {
 
         s_userFunds[_msgSender()] = 0;
         (bool success, ) = _msgSender().call{value: userBalance}("");
-        require(success, "Transfer failed");
+        if (!success) revert SeedSphere__TransferFailed();
 
         emit FundsWithdrawn(_msgSender(), userBalance);
     }
@@ -319,6 +320,10 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable {
     /// @return Current token ID
     function getCurrentTokenId() public view returns (uint256) {
         return s_currentTokenId;
+    }
+
+    function getFunderId(address funderAddress) public view returns (uint256) {
+        return s_funderIds[funderAddress];
     }
 
     /*****************************
