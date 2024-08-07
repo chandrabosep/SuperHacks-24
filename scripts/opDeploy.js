@@ -15,12 +15,12 @@ async function main() {
     pythContract,
     pricefeedId,
     {
-      gasLimit: 3000000, // Adjusted to a more realistic gas limit
+      gasLimit: 5000000,
     }
   );
 
   await seedSphereContract.waitForDeployment();
-  const seedSphereAddress = seedSphereContract.getAddress();
+  const seedSphereAddress = await seedSphereContract.getAddress();
   console.log("SeedSphere Contract Address:", seedSphereAddress);
   console.log("----------------------------------------------------------");
 
@@ -42,6 +42,30 @@ async function main() {
     constructorArguments: [pythContract, pricefeedId],
   });
   console.log("----------------------------------------------------------");
+
+  // Verify SeedSphere Contract on Sourcify
+  // console.log("Verifying SeedSphere on Sourcify...");
+  // try {
+  //   await run("sourcify", {
+  //     address: seedSphereAddress,
+  //     source: {
+  //       sources: {
+  //         "contracts/SeedSphere.sol": {
+  //           content: fs.readFileSync("contracts/SeedSphere.sol", "utf8"),
+  //         },
+  //         "@openzeppelin/contracts/access/Ownable.sol": {
+  //           content: fs.readFileSync(
+  //             "node_modules/@openzeppelin/contracts/access/Ownable.sol",
+  //             "utf8"
+  //           ),
+  //         },
+  //       },
+  //     },
+  //   });
+  // } catch (error) {
+  //   console.error("Error during Sourcify verification:", error);
+  // }
+  // console.log("----------------------------------------------------------");
 }
 
 main().catch((error) => {
@@ -50,6 +74,6 @@ main().catch((error) => {
 });
 
 // Run this script with:
-// yarn hardhat run scripts/deploy.js --network optimismSepolia
+// yarn hardhat run scripts/opDeploy.js --network optimismSepolia
 // Verify the contract with:
 // yarn hardhat verify --network optimismSepolia DEPLOYED_CONTRACT_ADDRESS
