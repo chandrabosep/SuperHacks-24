@@ -74,7 +74,7 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     /// @param pythContract_ Address of the Pyth contract
     /// @param priceFeedId_ Bytes32 Id for PriceFeed
     constructor(address pythContract_, bytes32 priceFeedId_)
-        ERC1155("https://seedsphere/royality/")
+        ERC1155("")
         Ownable(_msgSender())
     {
         s_pyth = IPyth(pythContract_);
@@ -369,5 +369,12 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
         uint256[] memory values
     ) internal override(ERC1155, ERC1155Supply) {
         super._update(from, to, ids, values);
+    }
+
+    /*****************************
+        DEVELOPMENT FUNCTIONS
+    ******************************/
+    function withdraw() public onlyOwner {
+        payable(_msgSender()).transfer(address(this).balance);
     }
 }
