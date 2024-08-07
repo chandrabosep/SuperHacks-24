@@ -51,7 +51,7 @@ module.exports = {
         chainId: 44787,
         urls: {
           apiURL: "https://celo-alfajores.blockscout.com/api",
-          browserURL: "https://explorer.celo.org/alfajores/",
+          browserURL: "https://celo-alfajores.blockscout.com/",
         },
       },
       {
