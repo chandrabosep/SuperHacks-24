@@ -1,6 +1,10 @@
-import { gtHead } from "@/components/Fonts";
-import ProjectCard from "@/components/ProjectCard";
+import AllProjects from "@/components/AllProjects";
 import React from "react";
+import localFont from "next/font/local";
+
+export const gtHead = localFont({
+	src: "../../../../public/fonts/Extended-Regular-Italic.otf",
+});
 
 export default function page() {
 	return (
@@ -11,10 +15,7 @@ export default function page() {
 				</h2>
 			</div>
 			<div className="flex items-center flex-wrap gap-6">
-				<ProjectCard />
-				<ProjectCard />
-				<ProjectCard />
-				<ProjectCard />
+				<AllProjects />
 			</div>
 		</div>
 	);

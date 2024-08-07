@@ -5,9 +5,11 @@ import { VerificationLevel, IDKitWidget, useIDKit } from "@worldcoin/idkit";
 import type { ISuccessResult } from "@worldcoin/idkit";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { dmSans } from "./Fonts";
+import { DM_Sans } from "next/font/google";
 
-export default function Home() {
+const dmSans = DM_Sans({ subsets: ["latin"] });
+
+export default function WORLDid() {
 	const app_id = process.env.NEXT_PUBLIC_WLD_APP_ID as `app_${string}`;
 	const action = process.env.NEXT_PUBLIC_WLD_ACTION;
 
@@ -23,7 +25,7 @@ export default function Home() {
 	const { setOpen } = useIDKit();
 
 	const onSuccess = (result: ISuccessResult) => {
-		// router.push("/submit-project");
+		router.push("/create-project");
 	};
 
 	const handleProof = async (result: ISuccessResult) => {

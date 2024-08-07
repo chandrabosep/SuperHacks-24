@@ -1,6 +1,10 @@
-import { gtHead } from "@/components/Fonts";
 import ProjectForm from "@/components/ProjectForm";
 import React from "react";
+import localFont from "next/font/local";
+
+export const gtHead = localFont({
+	src: "../../../../public/fonts/Extended-Regular-Italic.otf",
+});
 
 export default function page() {
 	return (

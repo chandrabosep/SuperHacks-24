@@ -1,10 +1,18 @@
-import { gtHead, gtSideHead } from "@/components/Fonts";
 import Image from "next/image";
 import spaceship from "@/public/map.svg";
 import superhack from "@/public/superhack.svg";
 import ThemeButton from "@/components/Button";
 import Link from "next/link";
 import { CheckIcon, Github, Linkedin, Twitter } from "lucide-react";
+import localFont from "next/font/local";
+
+export const gtHead = localFont({
+	src: "../../../public/fonts/Extended-Regular-Italic.otf",
+});
+
+export const gtSideHead = localFont({
+	src: "../../../public/fonts/standard-Regular-Italic.otf",
+});
 
 export default function Home() {
 	return (
@@ -22,7 +30,7 @@ export default function Home() {
 						chains with SeedSphere. Support public projects and
 						showcase your contributions.
 					</p>
-					<Link href="/dashboard/1">
+					<Link href="/dashboard">
 						<ThemeButton className="px-10 py-6">
 							Add Your Project
 						</ThemeButton>

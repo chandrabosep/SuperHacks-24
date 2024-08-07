@@ -3,7 +3,11 @@ import React from "react";
 import { Geo } from "next/font/google";
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import { gtSideHead } from "./Fonts";
+import localFont from "next/font/local";
+
+export const gtSideHead = localFont({
+	src: "../public/fonts/standard-Regular-Italic.otf",
+});
 
 const major = Geo({
 	subsets: ["latin"],
@@ -26,7 +30,7 @@ export default function Navbar() {
 				className={`${gtSideHead.className} flex gap-10 text-lg font-medium tracking-wide`}
 			>
 				{isConnected && (
-					<Link href="/dashboard/1" className="">
+					<Link href="/dashboard" className="">
 						Dashboard
 					</Link>
 				)}

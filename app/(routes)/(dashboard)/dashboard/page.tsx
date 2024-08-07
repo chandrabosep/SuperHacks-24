@@ -1,8 +1,13 @@
-import { gtHead } from "@/components/Fonts";
-import ProjectCard from "@/components/ProjectCard";
+"use client";
 import React from "react";
 import ThemeButton from "@/components/Button";
 import Link from "next/link";
+import Projects from "@/components/Projects";
+import localFont from "next/font/local";
+
+export const gtHead = localFont({
+	src: "../../../../public/fonts/Extended-Regular-Italic.otf",
+});
 
 export default function page() {
 	return (
@@ -14,12 +19,12 @@ export default function page() {
 					>
 						Dashboard
 					</h2>
-					<Link href="/create-project">
+					<Link href="/verify">
 						<ThemeButton>Submit project</ThemeButton>
 					</Link>
 				</div>
 				<div className="flex items-center">
-					{ true ? <ProjectCard /> : "No projects yet" }
+					<Projects />
 				</div>
 			</div>
 			<div className="flex flex-col py-4 gap-y-16">

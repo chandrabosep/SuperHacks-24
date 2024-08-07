@@ -21,6 +21,7 @@ const chartData = [
 	{ month: "May", funded: 2 },
 	{ month: "June", funded: 4 },
 ];
+
 const chartConfig = {
 	funded: {
 		label: "Funded",
@@ -28,11 +29,13 @@ const chartConfig = {
 	},
 } satisfies ChartConfig;
 
-export default function ProjectCard() {
+export default function ProjectCard({ project }: { project: any }) {
 	const [flipped, setFlipped] = useState(false);
+
 	return (
 		<Card
-			className="w-full max-w-md  min-h-[410px]"
+			key={project._id}
+			className="w-full max-w-md h-fit min-h-[420px] min-w-[30rem]"
 			onClick={() => {
 				setFlipped(!flipped);
 			}}
@@ -40,8 +43,8 @@ export default function ProjectCard() {
 			<>
 				{!flipped && (
 					<Image
-						src="/placeholder.jpg"
-						alt="Card Image"
+						src={project.image || "/placeholder.jpg"}
+						alt={project.name || "Project Image"}
 						width="400"
 						height="200"
 						className="object-cover w-full rounded-t-lg"
@@ -54,18 +57,15 @@ export default function ProjectCard() {
 
 				<CardContent className="p-4 space-y-2 border-t h-full">
 					<div className="flex items-center justify-between">
-						<h3 className="text-xl font-bold">
-							Beautiful Landscape
-						</h3>
-						<Link href="/explore/1">
+						<h3 className="text-xl font-bold">{project.name}</h3>
+						<Link href={`/explore/${project._id}`}>
 							<SquareArrowOutUpRight className="w-4 h-4 text-theme-secondary" />
 						</Link>
 					</div>
 					{!flipped ? (
 						<>
 							<p className="text-muted-foreground line-clamp-3 min-h-20">
-								A stunning landscape with rolling hills, a
-								serene lake, and a breathtaking sunset.
+								{project?.projectDescription}
 							</p>
 							<div className="flex items-center gap-2 text-sm text-muted-foreground">
 								<Triangle className="w-4 h-4 fill-primary" />

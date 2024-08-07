@@ -3,11 +3,9 @@ import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -16,12 +14,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import ThemeButton from "./Button";
+import { client } from "@/lib/sanity";
 
 const formSchema = z.object({
-	username: z.string().min(2, {
-		message: "Username must be at least 2 characters.",
-	}),
-	projectName: z.string().min(1, {
+	name: z.string().min(1, {
 		message: "Project name is required.",
 	}),
 	projectLink: z.string().url({
@@ -30,7 +26,7 @@ const formSchema = z.object({
 	projectDescription: z.string().min(1, {
 		message: "Project description is required.",
 	}),
-	teamInfo: z.string().min(1, {
+	teamInformation: z.string().min(1, {
 		message: "Team information is required.",
 	}),
 	projectDetails: z.string().min(1, {
@@ -39,17 +35,13 @@ const formSchema = z.object({
 	walletAddress: z.string().min(1, {
 		message: "Wallet address is required.",
 	}),
-
-	// linkedin: z.string().url({
-	// 	message: "Please enter a valid LinkedIn URL.",
-	// }),
-	twitter: z.string().url({
+	twitterProfileLink: z.string().url({
 		message: "Please enter a valid Twitter URL.",
 	}),
 	previousAchievements: z.string().min(1, {
 		message: "Previous achievements are required.",
 	}),
-	otherLinks: z.string().min(1, {
+	otherRelevantLinks: z.string().min(1, {
 		message: "Other relevant links are required.",
 	}),
 });
@@ -58,31 +50,70 @@ export default function ProjectForm() {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			username: "",
-			projectName: "",
+			// username: "",
+			name: "",
 			projectLink: "",
 			projectDescription: "",
-			teamInfo: "",
+			teamInformation: "",
 			projectDetails: "",
 			walletAddress: "",
-			// linkedin: "",
-			twitter: "",
+			twitterProfileLink: "",
 			previousAchievements: "",
-			otherLinks: "",
+			otherRelevantLinks: "",
 		},
 	});
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		console.log(values);
-	}
+
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		try {
+			const response = await client.create(
+				{
+					_type: "project",
+					...values,
+				},
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer skiomHVuc1NS6Jhn8Bw9Kv4QACP3Fn3reqix5a1Yecc9FjUQAes2LIRlWBdc6A6cljaqCJV3qiXnPf6yTl00vYupvWCXOabKQpRNbuGUAh7qgtxAMai3EsAYXZBIb6nTkxIzBVbnRPgBxJ96UYN4OjwcooL2zO5neCm8XO7KpvCcMr0YoqeY`,
+					},
+				}
+			);
+			console.log("Project created:", response);
+		} catch (error) {
+			console.error("Error creating project:", error);
+		}
+	};
+
 	return (
 		<>
 			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="">
+				<form
+					onSubmit={form.handleSubmit(onSubmit)}
+					className="space-y-6"
+				>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<div className="space-y-6">
+							{/* <FormField
+								control={form.control}
+								name="username"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel htmlFor="username">
+											Username
+										</FormLabel>
+										<FormControl>
+											<Input
+												id="username"
+												placeholder="Enter your username"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/> */}
 							<FormField
 								control={form.control}
-								name="projectName"
+								name="name"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel htmlFor="project-name">
@@ -140,7 +171,7 @@ export default function ProjectForm() {
 							/>
 							<FormField
 								control={form.control}
-								name="teamInfo"
+								name="teamInformation"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel htmlFor="team-info">
@@ -189,9 +220,8 @@ export default function ProjectForm() {
 											Wallet Address
 										</FormLabel>
 										<FormControl>
-											<Textarea
+											<Input
 												id="wallet-address"
-												rows={3}
 												placeholder="Enter your wallet address..."
 												{...field}
 											/>
@@ -202,10 +232,10 @@ export default function ProjectForm() {
 							/>
 							<FormField
 								control={form.control}
-								name="twitter"
+								name="twitterProfileLink"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel htmlFor="social-links">
+										<FormLabel htmlFor="twitter">
 											Twitter Profile Link
 										</FormLabel>
 										<FormControl>
@@ -219,26 +249,6 @@ export default function ProjectForm() {
 									</FormItem>
 								)}
 							/>
-							{/* <FormField
-							control={form.control}
-							name="linkedin"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel htmlFor="social-links">
-										Linked Profile Link
-									</FormLabel>
-									<FormControl>
-										<Input
-											id="linkedin"
-											placeholder="LinkedIn"
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/> */}
-
 							<FormField
 								control={form.control}
 								name="previousAchievements"
@@ -261,7 +271,7 @@ export default function ProjectForm() {
 							/>
 							<FormField
 								control={form.control}
-								name="otherLinks"
+								name="otherRelevantLinks"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel htmlFor="other-links">
