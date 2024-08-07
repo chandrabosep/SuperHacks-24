@@ -6,7 +6,7 @@ import Projects from "@/components/Projects";
 import localFont from "next/font/local";
 
 export const gtHead = localFont({
-	src: "../../../../public/fonts/Extended-Regular-Italic.otf",
+	src: [{ path: "../../../../public/fonts/Extended-Regular-Italic.otf" }],
 });
 
 export default function page() {
