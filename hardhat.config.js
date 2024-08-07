@@ -50,8 +50,8 @@ module.exports = {
         network: "celoAlfajores",
         chainId: 44787,
         urls: {
-          apiURL: "https://explorer.celo.org/api",
-          browserURL: "https://explorer.celo.org/alfajores",
+          apiURL: "https://celo-alfajores.blockscout.com/api",
+          browserURL: "https://explorer.celo.org/alfajores/",
         },
       },
       {
@@ -67,7 +67,7 @@ module.exports = {
         chainId: 84532,
         urls: {
           apiURL: "https://base-sepolia.blockscout.com/api",
-          browserURL: "https://base-sepolia.blockscout.com",
+          browserURL: "https://base-sepolia.blockscout.com/",
         },
       },
       {
@@ -75,7 +75,7 @@ module.exports = {
         chainId: 919,
         urls: {
           apiURL: "https://sepolia.explorer.mode.network/api",
-          browserURL: "https://sepolia.explorer.mode.network",
+          browserURL: "https://sepolia.explorer.mode.network/",
         },
       },
     ],
