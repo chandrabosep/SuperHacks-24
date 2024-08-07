@@ -74,7 +74,7 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     /// @param pythContract_ Address of the Pyth contract
     /// @param priceFeedId_ Bytes32 Id for PriceFeed
     constructor(address pythContract_, bytes32 priceFeedId_)
-        ERC1155("")
+        ERC1155("https://seedsphere/royality/")
         Ownable(_msgSender())
     {
         s_pyth = IPyth(pythContract_);
@@ -83,8 +83,8 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     /*****************************
-        STATE UPDATE FUNCTIONS
-    ******************************/
+            STATE UPDATE FUNCTIONS
+        ******************************/
 
     /// @notice Function to fund user projects
     /// @param userAddresses Array of user addresses to fund
@@ -193,8 +193,8 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     /*****************************
-            SETTER FUNCTIONS
-    ******************************/
+                SETTER FUNCTIONS
+        ******************************/
 
     /// @notice Sets the base URI for the token metadata
     /// @param newuri New base URI for the tokens
@@ -254,8 +254,8 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     /*****************************
-            GETTER FUNCTIONS
-    ******************************/
+                GETTER FUNCTIONS
+        ******************************/
 
     /// @notice Checks if the funder has an ID
     /// @param funderAddress Address of the funder to check
@@ -298,9 +298,23 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
         return s_currentTokenId;
     }
 
+    function getScaledAmount(PythStructs.Price memory price)
+        public
+        pure
+        returns (uint256 oneDollarInWei)
+    {
+        // Convert the price to 18 decimal places
+        uint256 ethPrice18Decimals = (uint256(uint64(price.price)) * (10**18)) /
+            (10**uint8(uint32(-1 * price.expo)));
+
+        // Calculate the Wei amount equivalent to one USD
+        oneDollarInWei = ((10**18) * (10**18)) / ethPrice18Decimals;
+        return oneDollarInWei;
+    }
+
     /*****************************
-        INTERNAL FUNCTIONS
-    ******************************/
+            INTERNAL FUNCTIONS
+        ******************************/
 
     /// @notice Internal function to update Pyth price feeds and get the current price
     /// @param priceUpdate Array of price update data from Pyth
@@ -340,8 +354,8 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     /*****************************
-        OVERRIDE FUNCTIONS
-    ******************************/
+            OVERRIDE FUNCTIONS
+        ******************************/
 
     /// @dev Override required by Solidity for multiple inheritance
     /// @param from Address of the sender
