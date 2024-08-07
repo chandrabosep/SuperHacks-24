@@ -7,11 +7,11 @@ import { CheckIcon, Github, Linkedin, Twitter } from "lucide-react";
 import localFont from "next/font/local";
 
 export const gtHead = localFont({
-	src: [{ path: "public/fonts/Extended-Regular-Italic.otf"}],
+	src: "../../../public/fonts/RegularItalic.ttf",
 });
 
 export const gtSideHead = localFont({
-	src: [{ path: "public/fonts/standard-Regular-Italic.otf" }],
+	src: "../../../public/fonts/Regular-Italic.ttf",
 });
 
 export default function Home() {

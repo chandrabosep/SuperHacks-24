@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export const gtText = localFont({
-	src: [{ path: "../public/fonts/Extended-Regular.otf" }],
+	src: "../public/fonts/Regular.ttf",
 });
 
 export default function RootLayout({

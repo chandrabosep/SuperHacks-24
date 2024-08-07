@@ -6,7 +6,7 @@ import { useAccount } from "wagmi";
 import localFont from "next/font/local";
 
 export const gtSideHead = localFont({
-	src: [{ path: "../public/fonts/standard-Regular-Italic.otf" }],
+	src: [{ path: "../public/fonts/Regular-Italic.ttf" }],
 });
 
 const major = Geo({
