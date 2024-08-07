@@ -6,11 +6,11 @@ import Link from "next/link";
 import { CheckIcon, Github, Linkedin, Twitter } from "lucide-react";
 import localFont from "next/font/local";
 
-export const gtHead = localFont({
+const gtHead = localFont({
 	src: "../../../public/fonts/RegularItalic.ttf",
 });
 
-export const gtSideHead = localFont({
+const gtSideHead = localFont({
 	src: "../../../public/fonts/Regular-Italic.ttf",
 });
 

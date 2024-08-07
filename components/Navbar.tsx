@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useAccount } from "wagmi";
 import localFont from "next/font/local";
 
-export const gtSideHead = localFont({
+const gtSideHead = localFont({
 	src: [{ path: "../public/fonts/Regular-Italic.ttf" }],
 });
 

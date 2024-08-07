@@ -2,7 +2,7 @@ import AllProjects from "@/components/AllProjects";
 import React from "react";
 import localFont from "next/font/local";
 
-export const gtHead = localFont({
+const gtHead = localFont({
 	src: [{ path: "../../../../public/fonts/RegularItalic.ttf" }],
 });
 

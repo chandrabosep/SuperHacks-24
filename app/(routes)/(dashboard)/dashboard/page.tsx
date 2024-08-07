@@ -5,7 +5,7 @@ import Link from "next/link";
 import Projects from "@/components/Projects";
 import localFont from "next/font/local";
 
-export const gtHead = localFont({
+const gtHead = localFont({
 	src: [{ path: "../../../../public/fonts/RegularItalic.ttf" }],
 });
 

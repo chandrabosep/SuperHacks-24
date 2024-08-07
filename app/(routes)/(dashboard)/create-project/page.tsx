@@ -2,11 +2,11 @@ import ProjectForm from "@/components/ProjectForm";
 import React from "react";
 import localFont from "next/font/local";
 
-export const gtHead = localFont({
-	src: [{ path: "../../../../public/fonts/RegularItalic.ttf" }],
+const gtHead = localFont({
+	src: "../../../../public/fonts/RegularItalic.ttf",
 });
 
-export default function page() {
+export default function CreateProject() {
 	return (
 		<div className="flex flex-col gap-y-4 py-5">
 			<h2 className={`${gtHead.className} text-3xl font-semibold`}>
