@@ -1,59 +1,31 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-/**
-  _____ ____   ____ _  _    __  ____   __     _    
- | ____|  _ \ / ___| || |  / /_|___ \ / /_   / \   
- |  _| | |_) | |   | || |_| '_ \ __) | '_ \ / _ \  
- | |___|  _ <| |___|__   _| (_) / __/| (_) / ___ \ 
- |_____|_| \_\\____|  |_|  \___/_____|\___/_/   \_\
- 
-*====================================================================*
-*                                                                    *
-* ███████╗██████╗  ██████╗██╗  ██╗ ██████╗ ██████╗  ██████╗  █████╗  *
-* ██╔════╝██╔══██╗██╔════╝██║  ██║██╔════╝ ╚════██╗██╔════╝ ██╔══██╗ *
-* █████╗  ██████╔╝██║     ███████║███████╗  █████╔╝███████╗ ███████║ *
-* ██╔══╝  ██╔══██╗██║     ╚════██║██╔═══██╗██╔═══╝ ██╔═══██╗██╔══██║ *
-* ███████╗██║  ██║╚██████╗     ██║╚██████╔╝███████╗╚██████╔╝██║  ██║ *
-* ╚══════╝╚═╝  ╚═╝ ╚═════╝     ╚═╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═╝ *
-*                                                                    *
-*====================================================================*
-
-    ______ ____   ______ __ __   _____ ___   _____  ___ 
-   / ____// __ \ / ____// // /  / ___/|__ \ / ___/ /   |
-  / __/  / /_/ // /    / // /_ / __ \ __/ // __ \ / /| |
- / /___ / _, _// /___ /__  __// /_/ // __// /_/ // ___ |
-/_____//_/ |_| \____/   /_/   \____//____/\____//_/  |_|
-
-*/
-
-import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import {ERC1155Supply} from "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-
-import {IPyth} from "@pythnetwork/pyth-sdk-solidity/IPyth.sol";
-import {PythStructs} from "@pythnetwork/pyth-sdk-solidity/PythStructs.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol"; // Import ERC721 standard from OpenZeppelin
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol"; // Import Ownable contract from OpenZeppelin
+import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol"; // Import ReentrancyGuard contract from OpenZeppelin
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol"; // Import Strings utility from OpenZeppelin
+import {IPyth} from "@pythnetwork/pyth-sdk-solidity/IPyth.sol"; // Import IPyth interface
+import {PythStructs} from "@pythnetwork/pyth-sdk-solidity/PythStructs.sol"; // Import PythStructs for data structures
 
 /// @notice Custom errors for the SeedSphere contract
-error SeedSphere__InvalidAddress();
-error SeedSphere__NoUsersProvided();
-error SeedSphere__TotalDepositTooLow();
-error SeedSphere__DepositPerUserTooLow();
-error SeedSphere__UserHasNoActiveProposal();
-error SeedSphere__PoolNotActive();
-error SeedSphere__DepositAmountTooLow();
-error SeedSphere__InvalidRandomNumber();
-error SeedSphere__PoolFundsZero();
-error SeedSphere__FeeTooLow();
-error SeedSphere__InsufficientFunds();
-error SeedSphere__TransferFailed();
-error SeedSphere__StalePrice();
+error SeedSphere__InvalidAddress(); // Error for invalid address
+error SeedSphere__NoUsersProvided(); // Error for no users provided
+error SeedSphere__TotalDepositTooLow(); // Error for total deposit being too low
+error SeedSphere__DepositPerUserTooLow(); // Error for deposit per user being too low
+error SeedSphere__UserHasNoActiveProposal(); // Error for user having no active proposal
+error SeedSphere__PoolNotActive(); // Error for pool not being active
+error SeedSphere__DepositAmountTooLow(); // Error for deposit amount being too low
+error SeedSphere__InvalidRandomNumber(); // Error for invalid random number
+error SeedSphere__PoolFundsZero(); // Error for pool funds being zero
+error SeedSphere__FeeTooLow(); // Error for fee being too low
+error SeedSphere__InsufficientFunds(); // Error for insufficient funds
+error SeedSphere__TransferFailed(); // Error for transfer failure
+error SeedSphere__StalePrice(); // Error for stale price data
 
 /// @title SeedSphere Contract
 /// @notice This contract allows funding projects and pooling funds among users, utilizing Pyth for price feeds.
-contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
+contract SeedSphere is ERC721, Ownable, ReentrancyGuard {
     /// @notice Current token ID tracker
     uint256 private s_currentTokenId;
 
@@ -66,6 +38,9 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     /// @notice Mapping to store funder IDs
     mapping(address => uint256) private s_funderIds;
 
+    /// @notice Mapping to store total funded amount in USD by token ID
+    mapping(uint256 => uint256) private s_totalFundedInUSD;
+
     /// @notice Boolean to indicate if the pool is active
     bool private s_poolActive;
 
@@ -77,6 +52,9 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
 
     /// @notice Price feed ID for NATIVE/USD
     bytes32 private s_priceFeedId;
+
+    /// @notice Base URI for token metadata
+    string private s_baseUri;
 
     /// @notice Event emitted when funds are added
     event Funded(address indexed funder, uint256 amount, uint256 tokenId);
@@ -100,17 +78,18 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     /// @param pythContract_ Address of the Pyth contract
     /// @param priceFeedId_ Bytes32 Id for PriceFeed
     constructor(address pythContract_, bytes32 priceFeedId_)
-        ERC1155("")
+        ERC721("SeedSphere", "BLOOM") // Initialize ERC721 with name and symbol
         Ownable(_msgSender())
     {
-        s_pyth = IPyth(pythContract_);
-        s_priceFeedId = priceFeedId_;
-        s_poolActive = false;
+        s_pyth = IPyth(pythContract_); // Set the Pyth contract address
+        s_priceFeedId = priceFeedId_; // Set the price feed ID
+        s_baseUri = "https://seedsphere/royalty/"; // Set the base URI for token metadata
+        s_poolActive = false; // Initialize pool as inactive
     }
 
     /*****************************
-            STATE UPDATE FUNCTIONS
-        ******************************/
+        STATE UPDATE FUNCTIONS
+    ******************************/
 
     /// @notice Function to fund user projects
     /// @param userAddresses Array of user addresses to fund
@@ -119,33 +98,30 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
         address[] calldata userAddresses,
         bytes[] calldata priceUpdate
     ) public payable nonReentrant {
-        uint256 numUsers = userAddresses.length;
-        if (numUsers == 0) revert SeedSphere__NoUsersProvided();
+        uint256 numUsers = userAddresses.length; // Get number of users
+        if (numUsers == 0) revert SeedSphere__NoUsersProvided(); // Revert if no users provided
 
-        // Update the price feeds
-        uint256 basePrice = _updatePythPriceFeeds(priceUpdate);
+        uint256 basePrice = _updatePythPriceFeeds(priceUpdate); // Update the price feeds and get base price
 
-        uint256 totalDeposits = msg.value - s_pyth.getUpdateFee(priceUpdate);
-        if (totalDeposits == 0) revert SeedSphere__TotalDepositTooLow();
+        uint256 totalDeposits = msg.value - s_pyth.getUpdateFee(priceUpdate); // Calculate total deposits
+        if (totalDeposits == 0) revert SeedSphere__TotalDepositTooLow(); // Revert if total deposit is too low
 
-        uint256 depositPerUser = totalDeposits / numUsers;
-        if (depositPerUser == 0) revert SeedSphere__DepositPerUserTooLow();
+        uint256 depositPerUser = totalDeposits / numUsers; // Calculate deposit per user
+        if (depositPerUser == 0) revert SeedSphere__DepositPerUserTooLow(); // Revert if deposit per user is too low
 
-        // Calculate the USD equivalent of the total deposit
-        uint256 totalAmountInUSD = (totalDeposits * basePrice) / 10**18;
-        if (totalAmountInUSD == 0) revert SeedSphere__DepositAmountTooLow();
+        uint256 totalAmountInUSD = (totalDeposits * basePrice) / 10**18; // Calculate total amount in USD
+        if (totalAmountInUSD == 0) revert SeedSphere__DepositAmountTooLow(); // Revert if deposit amount is too low
 
-        uint256 tokenId = _assignTokenId(_msgSender());
+        uint256 tokenId = _assignTokenId(_msgSender()); // Assign a token ID to the funder
 
         for (uint256 i = 0; i < numUsers; ++i) {
             if (getUserProposalHash(userAddresses[i]) == bytes32(0))
-                revert SeedSphere__UserHasNoActiveProposal();
-            s_userFunds[userAddresses[i]] += depositPerUser;
+                revert SeedSphere__UserHasNoActiveProposal(); // Revert if user has no active proposal
+            s_userFunds[userAddresses[i]] += depositPerUser; // Add deposit to user funds
         }
+        s_totalFundedInUSD[tokenId] += totalAmountInUSD; // Update total funded amount in USD
 
-        _mint(_msgSender(), tokenId, totalAmountInUSD, "");
-
-        emit Funded(_msgSender(), totalDeposits, tokenId);
+        emit Funded(_msgSender(), totalDeposits, tokenId); // Emit Funded event
     }
 
     /// @notice Function to fund the pool
@@ -155,25 +131,22 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
         payable
         nonReentrant
     {
-        if (!s_poolActive) revert SeedSphere__PoolNotActive();
+        if (!s_poolActive) revert SeedSphere__PoolNotActive(); // Revert if pool is not active
 
-        // Update the price feeds
-        uint256 basePrice = _updatePythPriceFeeds(priceUpdate);
+        uint256 basePrice = _updatePythPriceFeeds(priceUpdate); // Update the price feeds and get base price
 
-        uint256 totalDeposits = msg.value - s_pyth.getUpdateFee(priceUpdate);
+        uint256 totalDeposits = msg.value - s_pyth.getUpdateFee(priceUpdate); // Calculate total deposits
 
-        s_poolFunds += totalDeposits;
+        s_poolFunds += totalDeposits; // Update pool funds
 
-        // Calculate the USD equivalent of the sent ETH amount
-        uint256 amountInUSD = (totalDeposits * basePrice) / 10**18;
+        uint256 amountInUSD = (totalDeposits * basePrice) / 10**18; // Calculate amount in USD
+        if (amountInUSD == 0) revert SeedSphere__DepositAmountTooLow(); // Revert if deposit amount is too low
 
-        if (amountInUSD == 0) revert SeedSphere__DepositAmountTooLow();
+        uint256 tokenId = _assignTokenId(_msgSender()); // Assign a token ID to the funder
 
-        uint256 tokenId = _assignTokenId(_msgSender());
+        s_totalFundedInUSD[tokenId] += amountInUSD * 2; // Update total funded amount in USD
 
-        _mint(_msgSender(), tokenId, amountInUSD * 2, "");
-
-        emit PoolFunded(_msgSender(), totalDeposits, tokenId);
+        emit PoolFunded(_msgSender(), totalDeposits, tokenId); // Emit PoolFunded event
     }
 
     /// @notice Adds or updates a project proposal
@@ -184,73 +157,67 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
         bytes32 proposalHash
     ) public onlyOwner {
         if (proposalUserAddress == address(0))
-            revert SeedSphere__InvalidAddress();
-        s_userProposalHashes[proposalUserAddress] = proposalHash;
-        emit ProjectAdded(proposalUserAddress, proposalHash);
+            revert SeedSphere__InvalidAddress(); // Revert if address is invalid
+        s_userProposalHashes[proposalUserAddress] = proposalHash; // Update proposal hash
+        emit ProjectAdded(proposalUserAddress, proposalHash); // Emit ProjectAdded event
     }
 
     /// @notice Ends the pool and distributes funds equally among users
     /// @param userAddresses Array of user addresses to receive funds
     function endPool(address[] calldata userAddresses) public onlyOwner {
-        uint256 numUsers = userAddresses.length;
-        if (s_poolFunds == 0) revert SeedSphere__PoolFundsZero();
+        uint256 numUsers = userAddresses.length; // Get number of users
+        if (s_poolFunds == 0) revert SeedSphere__PoolFundsZero(); // Revert if pool funds are zero
 
-        uint256 depositPerUser = s_poolFunds / numUsers;
+        uint256 depositPerUser = s_poolFunds / numUsers; // Calculate deposit per user
 
         for (uint256 i = 0; i < numUsers; ++i) {
-            s_userFunds[userAddresses[i]] += depositPerUser;
+            s_userFunds[userAddresses[i]] += depositPerUser; // Distribute funds to users
         }
 
-        s_poolActive = false;
+        s_poolActive = false; // Set pool as inactive
 
-        emit PoolEnded(s_poolFunds, depositPerUser);
+        emit PoolEnded(s_poolFunds, depositPerUser); // Emit PoolEnded event
     }
 
     /// @notice Allows users to withdraw their funds
     function withdrawFunds() public nonReentrant {
-        uint256 userBalance = s_userFunds[_msgSender()];
-        if (userBalance == 0) revert SeedSphere__InsufficientFunds();
+        uint256 userBalance = s_userFunds[_msgSender()]; // Get user balance
+        if (userBalance == 0) revert SeedSphere__InsufficientFunds(); // Revert if insufficient funds
 
-        s_userFunds[_msgSender()] = 0;
-        (bool success, ) = _msgSender().call{value: userBalance}("");
-        if (!success) revert SeedSphere__TransferFailed();
+        s_userFunds[_msgSender()] = 0; // Reset user funds
+        (bool success, ) = _msgSender().call{value: userBalance}(""); // Transfer funds to user
+        if (!success) revert SeedSphere__TransferFailed(); // Revert if transfer fails
 
-        emit FundsWithdrawn(_msgSender(), userBalance);
+        emit FundsWithdrawn(_msgSender(), userBalance); // Emit FundsWithdrawn event
     }
 
     /*****************************
-                SETTER FUNCTIONS
-        ******************************/
-
-    /// @notice Sets the base URI for the token metadata
-    /// @param newuri New base URI for the tokens
-    function setBaseURI(string memory newuri) public onlyOwner {
-        _setURI(newuri);
-    }
+            SETTER FUNCTIONS
+    ******************************/
 
     /// @notice Sets the pool active status
     /// @param _poolActive Boolean indicating if the pool is active or not
     function setPoolActive(bool _poolActive) external onlyOwner {
-        s_poolActive = _poolActive;
-        emit PoolStatusChanged(_poolActive); // Emit an event for pool status change
+        s_poolActive = _poolActive; // Set pool active status
+        emit PoolStatusChanged(_poolActive); // Emit PoolStatusChanged event
     }
 
     /// @notice Activates the pool
     function activatePool() public onlyOwner {
-        s_poolActive = true;
-        emit PoolStatusChanged(true);
+        s_poolActive = true; // Activate pool
+        emit PoolStatusChanged(true); // Emit PoolStatusChanged event
     }
 
     /// @notice Updates the Pyth contract address
     /// @param _newPythContract The new address of the Pyth contract
     function updatePythContract(address _newPythContract) public onlyOwner {
-        s_pyth = IPyth(_newPythContract);
+        s_pyth = IPyth(_newPythContract); // Update Pyth contract address
     }
 
     /// @notice Updates the price feed ID
     /// @param _newPriceFeedId The new price feed ID
     function updatePriceFeed(bytes32 _newPriceFeedId) public onlyOwner {
-        s_priceFeedId = _newPriceFeedId;
+        s_priceFeedId = _newPriceFeedId; // Update price feed ID
     }
 
     /// @notice Updates the address of a user proposal
@@ -260,13 +227,13 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
         address oldUserProposalAddress,
         address newUserProposalAddress
     ) public onlyOwner {
-        uint256 userFunds = s_userFunds[oldUserProposalAddress];
-        delete s_userFunds[oldUserProposalAddress];
-        s_userFunds[newUserProposalAddress] = userFunds;
+        uint256 userFunds = s_userFunds[oldUserProposalAddress]; // Get user funds
+        delete s_userFunds[oldUserProposalAddress]; // Delete old user funds
+        s_userFunds[newUserProposalAddress] = userFunds; // Set new user funds
 
-        bytes32 proposalHash = s_userProposalHashes[oldUserProposalAddress];
-        delete s_userProposalHashes[oldUserProposalAddress];
-        s_userProposalHashes[newUserProposalAddress] = proposalHash;
+        bytes32 proposalHash = s_userProposalHashes[oldUserProposalAddress]; // Get proposal hash
+        delete s_userProposalHashes[oldUserProposalAddress]; // Delete old proposal hash
+        s_userProposalHashes[newUserProposalAddress] = proposalHash; // Set new proposal hash
     }
 
     /// @notice Updates the proposal hash for a user
@@ -276,12 +243,17 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
         address userProposalAddress,
         bytes32 newUserProposalHash
     ) public onlyOwner {
-        s_userProposalHashes[userProposalAddress] = newUserProposalHash;
+        s_userProposalHashes[userProposalAddress] = newUserProposalHash; // Update proposal hash
     }
 
     /*****************************
-                GETTER FUNCTIONS
-        ******************************/
+            GETTER FUNCTIONS
+    ******************************/
+
+    /// @notice Retuns the base URI for the token metadata
+    function _baseURI() internal view virtual override returns (string memory) {
+        return s_baseUri; // Return base URI
+    }
 
     /// @notice Checks if the funder has an ID
     /// @param funderAddress Address of the funder to check
@@ -291,20 +263,7 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
         view
         returns (bool)
     {
-        return balanceOf(funderAddress, s_funderIds[funderAddress]) > 0;
-    }
-
-    /// @notice Returns the Uniform Resource Identifier (URI) for a given token ID
-    /// @param tokenId The token ID for which to retrieve the URI
-    /// @return A string representing the URI for the given token ID
-    function uri(uint256 tokenId)
-        public
-        view
-        virtual
-        override(ERC1155)
-        returns (string memory)
-    {
-        return string.concat(super.uri(tokenId), Strings.toString(tokenId));
+        return balanceOf(funderAddress) == 1; // Return true if funder has an ID
     }
 
     /// @notice Checks if the user has an active proposal
@@ -315,32 +274,32 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
         view
         returns (bytes32)
     {
-        return s_userProposalHashes[proposalUserAddress];
+        return s_userProposalHashes[proposalUserAddress]; // Return proposal hash
     }
 
     /// @notice Gets the current token ID
     /// @return Current token ID
     function getCurrentTokenId() public view returns (uint256) {
-        return s_currentTokenId;
+        return s_currentTokenId; // Return current token ID
     }
 
+    /// @notice Calculates the Wei amount equivalent to one USD
+    /// @param price Price data from Pyth
+    /// @return oneDollarInWei The amount of Wei equivalent to one USD
     function getScaledAmount(PythStructs.Price memory price)
         public
         pure
         returns (uint256 oneDollarInWei)
     {
-        // Convert the price to 18 decimal places
         uint256 ethPrice18Decimals = (uint256(uint64(price.price)) * (10**18)) /
-            (10**uint8(uint32(-1 * price.expo)));
-
-        // Calculate the Wei amount equivalent to one USD
-        oneDollarInWei = ((10**18) * (10**18)) / ethPrice18Decimals;
-        return oneDollarInWei;
+            (10**uint8(uint32(-1 * price.expo))); // Convert the price to 18 decimal places
+        oneDollarInWei = ((10**18) * (10**18)) / ethPrice18Decimals; // Calculate the Wei amount equivalent to one USD
+        return oneDollarInWei; // Return oneDollarInWei
     }
 
     /*****************************
-            INTERNAL FUNCTIONS
-        ******************************/
+        INTERNAL FUNCTIONS
+    ******************************/
 
     /// @notice Internal function to update Pyth price feeds and get the current price
     /// @param priceUpdate Array of price update data from Pyth
@@ -349,22 +308,18 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
         private
         returns (uint256 oneDollarInWei)
     {
-        uint256 fee = s_pyth.getUpdateFee(priceUpdate);
-        s_pyth.updatePriceFeeds{value: fee}(priceUpdate);
-        PythStructs.Price memory price = s_pyth.getPrice(s_priceFeedId);
+        uint256 fee = s_pyth.getUpdateFee(priceUpdate); // Get the update fee
+        s_pyth.updatePriceFeeds{value: fee}(priceUpdate); // Update the price feeds
+        PythStructs.Price memory price = s_pyth.getPrice(s_priceFeedId); // Get the current price
 
-        // Ensure the price data is recent
         if (block.timestamp - price.publishTime > s_pyth.getValidTimePeriod()) {
-            revert SeedSphere__StalePrice();
+            revert SeedSphere__StalePrice(); // Revert if price data is stale
         }
 
-        // Convert the price to 18 decimal places
         uint256 ethPrice18Decimals = (uint256(uint64(price.price)) * (10**18)) /
-            (10**uint8(uint32(-1 * price.expo)));
-
-        // Calculate the Wei amount equivalent to one USD
-        oneDollarInWei = ((10**18) * (10**18)) / ethPrice18Decimals;
-        return oneDollarInWei;
+            (10**uint8(uint32(-1 * price.expo))); // Convert the price to 18 decimal places
+        oneDollarInWei = ((10**18) * (10**18)) / ethPrice18Decimals; // Calculate the Wei amount equivalent to one USD
+        return oneDollarInWei; // Return oneDollarInWei
     }
 
     /// @notice Internal function to assign a token ID to a funder
@@ -372,35 +327,21 @@ contract SeedSphere is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     /// @return tokenId The assigned token ID
     function _assignTokenId(address funder) private returns (uint256 tokenId) {
         if (checkFunderHaveId(funder)) {
-            tokenId = s_funderIds[funder];
+            tokenId = s_funderIds[funder]; // Return existing token ID if funder has an ID
         } else {
-            tokenId = s_currentTokenId++;
-            s_funderIds[funder] = tokenId;
+            tokenId = getCurrentTokenId(); // Assign new token ID
+            s_currentTokenId = s_currentTokenId + 1; // Increment current token ID
+            s_funderIds[funder] = tokenId; // Map funder address to token ID
+            _mint(funder, tokenId); // Mint new token
         }
     }
 
     /*****************************
-            OVERRIDE FUNCTIONS
-        ******************************/
-
-    /// @dev Override required by Solidity for multiple inheritance
-    /// @param from Address of the sender
-    /// @param to Address of the receiver
-    /// @param ids Array of token IDs being transferred
-    /// @param values Array of amounts being transferred
-    function _update(
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory values
-    ) internal override(ERC1155, ERC1155Supply) {
-        super._update(from, to, ids, values);
-    }
-
-    /*****************************
-        DEVELOPMENT FUNCTIONS
+        OVERRIDE FUNCTIONS
     ******************************/
+
+    /// @notice Allows the contract owner to withdraw contract balance
     function withdraw() public onlyOwner {
-        payable(_msgSender()).transfer(address(this).balance);
+        payable(_msgSender()).transfer(address(this).balance); // Transfer contract balance to owner
     }
 }
