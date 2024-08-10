@@ -11,7 +11,6 @@ import {
 	ChartTooltipContent,
 } from "./ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import ThemeButton from "./Button";
 
 const chartData = [
 	{ month: "January", funded: 3 },
