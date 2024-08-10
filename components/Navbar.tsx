@@ -32,7 +32,7 @@ export default function Navbar() {
 				SeedSphere
 			</Link>
 			<div
-				className={`${gtSideHead.className} flex gap-10 text-lg font-medium tracking-wide`}
+				className={`${gtSideHead.className} hidden md:flex gap-10 text-lg font-medium tracking-wide`}
 			>
 				{isConnected && (
 					<Link href="/dashboard" className="">

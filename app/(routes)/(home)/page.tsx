@@ -3,7 +3,7 @@ import spaceship from "@/public/map.svg";
 import superhack from "@/public/superhack.svg";
 import ThemeButton from "@/components/Button";
 import Link from "next/link";
-import { BoltIcon, CheckIcon, Github, Linkedin, Twitter } from "lucide-react";
+import { BoltIcon, CheckIcon, Component, Gem, Github, Linkedin, PartyPopper, ScrollText, Twitter, Users, Vault } from "lucide-react";
 import localFont from "next/font/local";
 
 const gtHead = localFont({
@@ -17,10 +17,10 @@ const gtSideHead = localFont({
 export default function Home() {
 	return (
 		<main className="flex flex-col items-center justify-center">
-			<div className="flex items-center justify-between">
-				<div className="py-40 flex flex-col gap-y-10">
+			<div className="flex flex-row items-center justify-between">
+				<div className="py-10 md:py-40 flex flex-col gap-y-10">
 					<div
-						className={`${gtHead.className} text-5xl font-bold space-y-4 `}
+						className={`${gtHead.className} text-4xl md:text-5xl font-bold space-y-4 `}
 					>
 						<h1>SeedSphere: Transforming </h1>
 						<h1>Open World Fundraising</h1>
@@ -39,7 +39,7 @@ export default function Home() {
 				<Image
 					src={spaceship}
 					alt="Spaceship"
-					className="brightness-0 w-[40%]"
+					className="brightness-0 w-[40%] hidden md:block"
 				/>
 			</div>
 			<div>
@@ -170,28 +170,40 @@ export default function Home() {
 				<div className="grid gap-16 lg:grid-cols-2 xl:grid-cols-3">
 					{[
 						{
-							title: "Instant Deployment",
+							title: "Project Proposal Funding",
 							description:
-								"Deploy your code with a single click and scale your infrastructure on-demand.",
-							icon: <BoltIcon />,
+								"Secure funding for your project with a streamlined, on-chain proposal process that connects you directly with potential funders.",
+							icon: <Gem />,
 						},
 						{
-							title: "Instant Deployment",
+							title: "Interoperable On-Chain Funding",
 							description:
-								"Deploy your code with a single click and scale your infrastructure on-demand.",
-							icon: <BoltIcon />,
+								"Leverage the power of CELO and OP stack chains (OP, BASE, MODE) to access multi-chain funding opportunities seamlessly.",
+							icon: <ScrollText />,
 						},
 						{
-							title: "Instant Deployment",
+							title: "Community Pool Funding",
 							description:
-								"Deploy your code with a single click and scale your infrastructure on-demand.",
-							icon: <BoltIcon />,
+								"Support underfunded or emerging projects through pooled funding, enabling collective growth and community-backed initiatives.",
+							icon: <Users />,
 						},
 						{
-							title: "Instant Deployment",
+							title: "ERC4626A Vault Standard",
 							description:
-								"Deploy your code with a single click and scale your infrastructure on-demand.",
-							icon: <BoltIcon />,
+								"Experience secure on-chain funding with SeedSphere's ERC4626A Vault, inspired by industry-leading standards for optimal efficiency and security.",
+							icon: <Vault />,
+						},
+						{
+							title: "Community-Driven Project Popularity",
+							description:
+								"Boost your project’s visibility and chances of success through community voting, driving engagement and support.",
+							icon: <PartyPopper />,
+						},
+						{
+							title: "Unique NFT Rewards for Funders",
+							description:
+								"Showcase your contributions with unique NFTs received for your total funding, easily shareable on platforms like X and Farcaster.",
+							icon: <Component />,
 						},
 					].map((feature) => (
 						<div key={feature.title} className="grid gap-4">
