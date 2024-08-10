@@ -3,7 +3,7 @@ import spaceship from "@/public/map.svg";
 import superhack from "@/public/superhack.svg";
 import ThemeButton from "@/components/Button";
 import Link from "next/link";
-import { CheckIcon, Github, Linkedin, Twitter } from "lucide-react";
+import { BoltIcon, CheckIcon, Github, Linkedin, Twitter } from "lucide-react";
 import localFont from "next/font/local";
 
 const gtHead = localFont({
@@ -44,7 +44,7 @@ export default function Home() {
 			</div>
 			<div>
 				<h2
-					className={`${gtSideHead.className} text-6xl font-bold border-b-8 border-[#fffb2a]  w-fit`}
+					className={`${gtHead.className} text-6xl font-bold border-b-8 border-[#fffb2a]  w-fit`}
 				>
 					How it works
 				</h2>
@@ -160,6 +160,57 @@ export default function Home() {
 						</div>
 					</div>
 				</section>
+			</div>
+			<div className="w-full flex flex-col gap-y-14 pb-16 pt-6	">
+				<h2
+					className={`${gtHead.className} text-6xl font-bold border-b-8 border-[#fffb2a]  w-fit`}
+				>
+					Features
+				</h2>
+				<div className="grid gap-16 lg:grid-cols-2 xl:grid-cols-3">
+					{[
+						{
+							title: "Instant Deployment",
+							description:
+								"Deploy your code with a single click and scale your infrastructure on-demand.",
+							icon: <BoltIcon />,
+						},
+						{
+							title: "Instant Deployment",
+							description:
+								"Deploy your code with a single click and scale your infrastructure on-demand.",
+							icon: <BoltIcon />,
+						},
+						{
+							title: "Instant Deployment",
+							description:
+								"Deploy your code with a single click and scale your infrastructure on-demand.",
+							icon: <BoltIcon />,
+						},
+						{
+							title: "Instant Deployment",
+							description:
+								"Deploy your code with a single click and scale your infrastructure on-demand.",
+							icon: <BoltIcon />,
+						},
+					].map((feature) => (
+						<div key={feature.title} className="grid gap-4">
+							<div className="flex items-start gap-4">
+								<div className="bg-muted rounded-md p-2 text-primary">
+									{feature.icon}
+								</div>
+								<div className="space-y-1">
+									<h3 className="text-2xl font-bold">
+										{feature.title}
+									</h3>
+									<p className="text-muted-foreground text-lg">
+										{feature.description}
+									</p>
+								</div>
+							</div>
+						</div>
+					))}
+				</div>
 			</div>
 			<div className="flex items-center justify-between border-t w-full pt-4">
 				<div className="flex items-center gap-2">

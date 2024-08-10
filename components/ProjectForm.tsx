@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import ThemeButton from "./Button";
 import { client } from "@/lib/sanity";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
 	name: z.string().min(1, {
@@ -47,6 +48,7 @@ const formSchema = z.object({
 });
 
 export default function ProjectForm() {
+	const router = useRouter();
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -65,18 +67,20 @@ export default function ProjectForm() {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		try {
-			const response = await client.create(
-				{
-					_type: "project",
-					...values,
-				},
-				{
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer skiomHVuc1NS6Jhn8Bw9Kv4QACP3Fn3reqix5a1Yecc9FjUQAes2LIRlWBdc6A6cljaqCJV3qiXnPf6yTl00vYupvWCXOabKQpRNbuGUAh7qgtxAMai3EsAYXZBIb6nTkxIzBVbnRPgBxJ96UYN4OjwcooL2zO5neCm8XO7KpvCcMr0YoqeY`,
+			const response = await client
+				.create(
+					{
+						_type: "project",
+						...values,
 					},
-				}
-			);
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer skiomHVuc1NS6Jhn8Bw9Kv4QACP3Fn3reqix5a1Yecc9FjUQAes2LIRlWBdc6A6cljaqCJV3qiXnPf6yTl00vYupvWCXOabKQpRNbuGUAh7qgtxAMai3EsAYXZBIb6nTkxIzBVbnRPgBxJ96UYN4OjwcooL2zO5neCm8XO7KpvCcMr0YoqeY`,
+						},
+					}
+				)
+				.then(() => router.push("/create-project"));
 			console.log("Project created:", response);
 		} catch (error) {
 			console.error("Error creating project:", error);

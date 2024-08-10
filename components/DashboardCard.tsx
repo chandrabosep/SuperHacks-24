@@ -4,9 +4,32 @@ import React, { useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import { SquareArrowOutUpRight, Triangle } from "lucide-react";
 import Link from "next/link";
+import {
+	ChartConfig,
+	ChartContainer,
+	ChartTooltip,
+	ChartTooltipContent,
+} from "./ui/chart";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import ThemeButton from "./Button";
 
-export default function ProjectCard({ project }: { project: any }) {
+const chartData = [
+	{ month: "January", funded: 3 },
+	{ month: "February", funded: 6.5 },
+	{ month: "March", funded: 5 },
+	{ month: "April", funded: 4 },
+	{ month: "May", funded: 2 },
+	{ month: "June", funded: 4 },
+];
+
+const chartConfig = {
+	funded: {
+		label: "Funded",
+		color: "#FFEF61",
+	},
+} satisfies ChartConfig;
+
+export default function DashboardCard({ project }: { project: any }) {
 	const [flipped, setFlipped] = useState(false);
 
 	return (
@@ -52,8 +75,37 @@ export default function ProjectCard({ project }: { project: any }) {
 							</div>
 						</>
 					) : (
-						<div className="h-full flex flex-col justify-between text-center w-full gap-y-8">
-							<div className="h-full grid grid-cols-2 gap-y-10 mt-10 mx-auto w-full">
+						<div className="h-full flex flex-col gap-y-10 mt-10">
+							<ChartContainer config={chartConfig}>
+								<BarChart
+									accessibilityLayer
+									data={chartData}
+									className="h-full"
+								>
+									<CartesianGrid vertical={false} />
+									<XAxis
+										dataKey="month"
+										tickLine={false}
+										tickMargin={10}
+										axisLine={false}
+										tickFormatter={(value) =>
+											value.slice(0, 3)
+										}
+									/>
+									<ChartTooltip
+										cursor={false}
+										content={
+											<ChartTooltipContent hideLabel />
+										}
+									/>
+									<Bar
+										dataKey="funded"
+										fill="#FFEF61"
+										radius={4}
+									/>
+								</BarChart>
+							</ChartContainer>
+							<div className="flex">
 								{["celo", "optimism", "base", "mode"].map(
 									(network) => {
 										// Calculate the total amount funded for the current network
@@ -79,16 +131,16 @@ export default function ProjectCard({ project }: { project: any }) {
 										return (
 											<div
 												key={network}
-												className="w-fit mx-auto flex flex-col gap-y-4"
+												className="w-fit mx-auto flex flex-col"
 											>
-												<h3 className="text-xl text-center font-bold uppercase">
+												<h3 className="text-xs text-center font-bold uppercase">
 													{network}
 												</h3>
 												<p
-													className={`mb-6 text-lg font-bold text-center`}
+													className={`mb-6 text-sm font-bold text-center`}
 												>
 													{displayAmount}
-													<span className="text-lg">
+													<span className="text-sm">
 														PTS
 													</span>
 												</p>
@@ -97,9 +149,6 @@ export default function ProjectCard({ project }: { project: any }) {
 									}
 								)}
 							</div>
-							<ThemeButton className="w-full rounded-md border-none bg-[#FFEF61] hover:bg-[#FFEF61]/90 text-theme-foreground/70 mt-auto">
-								Fund Project
-							</ThemeButton>
 						</div>
 					)}
 				</CardContent>
