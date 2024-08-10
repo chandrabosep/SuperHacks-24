@@ -50,6 +50,6 @@ main().catch((error) => {
 });
 
 // Run this script with:
-// yarn hardhat run scripts/opDeploy.js --network celoAlfajores
+// yarn hardhat run scripts/celoDeploy.js --network celoAlfajores
 // Verify the contract with:
 // yarn hardhat verify --network celoAlfajores DEPLOYED_CONTRACT_ADDRESS

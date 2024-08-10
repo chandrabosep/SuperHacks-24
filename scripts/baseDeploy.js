@@ -50,6 +50,6 @@ main().catch((error) => {
 });
 
 // Run this script with:
-// yarn hardhat run scripts/opDeploy.js --network baseSepolia
+// yarn hardhat run scripts/baseDeploy.js --network baseSepolia
 // Verify the contract with:
 // yarn hardhat verify --network baseSepolia DEPLOYED_CONTRACT_ADDRESS

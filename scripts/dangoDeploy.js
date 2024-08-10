@@ -30,6 +30,6 @@ main().catch((error) => {
 });
 
 // Run this script with:
-// yarn hardhat run scripts/opDeploy.js --network celoDango
+// yarn hardhat run scripts/dangoDeploy.js --network celoDango
 // Verify the contract with:
 // yarn hardhat verify --network celoDango DEPLOYED_CONTRACT_ADDRESS
