@@ -1,11 +1,6 @@
-"use client";
 import React from "react";
-import ThemeButton from "@/components/Button";
-import Link from "next/link";
 import localFont from "next/font/local";
-import DashboardProjects from "@/components/DashboardProjects";
-
-
+import Admin from "@/components/Admin";
 const gtHead = localFont({
 	src: [{ path: "../../../../public/fonts/RegularItalic.ttf" }],
 });
@@ -14,17 +9,14 @@ export default function page() {
 	return (
 		<div className="flex flex-col py-4 gap-y-10">
 			<div className="flex flex-col py-4 gap-y-10">
-				<div className="flex items-center justify-between">
+				<div className="flex flex-col gap-y-6 justify-between">
 					<h2
 						className={`${gtHead.className} text-3xl font-semibold`}
 					>
-						Dashboard
+						Admin
 					</h2>
-					<Link href="/verify">
-						<ThemeButton>Submit Proposal</ThemeButton>
-					</Link>
+					<Admin />
 				</div>
-				<DashboardProjects />				
 			</div>
 		</div>
 	);

@@ -7,6 +7,7 @@ const gtHead = localFont({
 });
 
 export default function CreateProject() {
+	
 	return (
 		<div className="flex flex-col gap-y-4 py-5">
 			<h2 className={`${gtHead.className} text-3xl font-semibold`}>

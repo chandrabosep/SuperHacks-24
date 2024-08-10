@@ -17,7 +17,12 @@ const major = Geo({
 const links = ["explore", "pool"];
 
 export default function Navbar() {
-	const { isConnected } = useAccount();
+	const { address, isConnected } = useAccount();
+	const adminAddresses = [
+		"0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701",
+		"0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701",
+	];
+
 	return (
 		<div className="flex items-center justify-between py-4 border-b border-theme-secondary/30">
 			<Link
@@ -39,6 +44,20 @@ export default function Navbar() {
 						{link}
 					</Link>
 				))}
+				{isConnected && (
+					<>
+						<Link href="/dashboard" className="">
+							Dashboard
+						</Link>
+						{adminAddresses
+							.map((addr: any) => addr.toLowerCase())
+							.includes(address?.toLowerCase()) && (
+							<Link href="/admin" className="">
+								Admin
+							</Link>
+						)}
+					</>
+				)}
 			</div>
 			<w3m-button balance="hide" />
 		</div>
