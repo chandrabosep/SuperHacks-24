@@ -3,6 +3,7 @@ require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 const {
   API_URL_CELO_ALFAJORES,
+  API_URL_CELO_DANGO,
   API_URL_OPTIMISM_SEPOLIA,
   API_URL_BASE_SEPOLIA,
   API_URL_MODE_SEPOLIA,
@@ -15,6 +16,13 @@ module.exports = {
   networks: {
     celoAlfajores: {
       url: API_URL_CELO_ALFAJORES,
+      accounts: [`0x${PRIVATE_KEY}`],
+      chainId: 44787,
+      timeout: 50000,
+      confirmations: 2,
+    },
+    celoDango: {
+      url: API_URL_CELO_DANGO,
       accounts: [`0x${PRIVATE_KEY}`],
       chainId: 44787,
       timeout: 50000,
@@ -52,6 +60,14 @@ module.exports = {
         urls: {
           apiURL: "https://celo-alfajores.blockscout.com/api",
           browserURL: "https://celo-alfajores.blockscout.com/",
+        },
+      },
+      {
+        network: "celoDango",
+        chainId: 44787,
+        urls: {
+          apiURL: "https://celo-dango.blockscout.com/api",
+          browserURL: "https://celo-dango.blockscout.com/",
         },
       },
       {
