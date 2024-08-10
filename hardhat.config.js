@@ -21,13 +21,13 @@ module.exports = {
       timeout: 50000,
       confirmations: 2,
     },
-    celoDango: {
-      url: API_URL_CELO_DANGO,
-      accounts: [`0x${PRIVATE_KEY}`],
-      chainId: 44787,
-      timeout: 50000,
-      confirmations: 2,
-    },
+    // celoDango: {
+    //   url: API_URL_CELO_DANGO,
+    //   accounts: [`0x${PRIVATE_KEY}`],
+    //   chainId: 44787,
+    //   timeout: 50000,
+    //   confirmations: 2,
+    // },
     optimismSepolia: {
       url: API_URL_OPTIMISM_SEPOLIA,
       accounts: [`0x${PRIVATE_KEY}`],
@@ -45,7 +45,7 @@ module.exports = {
     modeSepolia: {
       url: API_URL_MODE_SEPOLIA,
       accounts: [`0x${PRIVATE_KEY}`],
-      chainId: 84532,
+      chainId: 919,
       timeout: 50000,
       confirmations: 2,
     },
@@ -60,16 +60,17 @@ module.exports = {
         urls: {
           apiURL: "https://celo-alfajores.blockscout.com/api",
           browserURL: "https://celo-alfajores.blockscout.com/",
+          // browserURL: "https://explorer.celo.org/alfajores/",
         },
       },
-      {
-        network: "celoDango",
-        chainId: 44787,
-        urls: {
-          apiURL: "https://celo-dango.blockscout.com/api",
-          browserURL: "https://celo-dango.blockscout.com/",
-        },
-      },
+      // {
+      //   network: "celoDango",
+      //   chainId: 44787,
+      //   urls: {
+      //     apiURL: "https://celo-dango.blockscout.com/api",
+      //     browserURL: "https://celo-dango.blockscout.com/",
+      //   },
+      // },
       {
         network: "optimismSepolia",
         chainId: 11155420,
