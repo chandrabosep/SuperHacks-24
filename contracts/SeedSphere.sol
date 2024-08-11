@@ -144,8 +144,8 @@ contract SeedSphere is ERC4626A, Ownable, ReentrancyGuard {
         uint256 tokenId = deposit(msg.value, _msgSender());
 
         for (uint256 i = 0; i < numUsers; ++i) {
-            if (getUserProposalHash(userAddresses[i]) == bytes32(0))
-                revert SeedSphere__UserHasNoActiveProposal();
+            // if (getUserProposalHash(userAddresses[i]) == bytes32(0))
+            //     revert SeedSphere__UserHasNoActiveProposal();
             s_userBalances[userAddresses[i]] += depositPerUser;
         }
 
@@ -214,8 +214,8 @@ contract SeedSphere is ERC4626A, Ownable, ReentrancyGuard {
         uint256 depositPerUser = s_poolBalance / numUsers;
 
         for (uint256 i = 0; i < numUsers; ++i) {
-            if (getUserProposalHash(userAddresses[i]) == bytes32(0))
-                revert SeedSphere__UserHasNoActiveProposal();
+            // if (getUserProposalHash(userAddresses[i]) == bytes32(0))
+            //     revert SeedSphere__UserHasNoActiveProposal();
             s_userBalances[userAddresses[i]] += depositPerUser;
         }
 
@@ -400,8 +400,8 @@ contract SeedSphere is ERC4626A, Ownable, ReentrancyGuard {
         uint256 tokenId = deposit(msg.value, _msgSender());
 
         for (uint256 i = 0; i < numUsers; ++i) {
-            if (getUserProposalHash(userAddresses[i]) == bytes32(0))
-                revert SeedSphere__UserHasNoActiveProposal();
+            // if (getUserProposalHash(userAddresses[i]) == bytes32(0))
+            //     revert SeedSphere__UserHasNoActiveProposal();
             s_userBalances[userAddresses[i]] += depositPerUser;
         }
 
