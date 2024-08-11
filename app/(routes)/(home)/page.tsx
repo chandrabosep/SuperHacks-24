@@ -203,7 +203,7 @@ export default function Home() {
 						{
 							title: "ERC4626A Vault Standard",
 							description:
-								"Experience secure on-chain funding with SeedSphere's ERC4626A Vault, inspired by industry-leading standards for optimal efficiency and security.",
+								"Experience secure on-chain funding with SeedSphere's ERC4626A Vault, inspired by ERC4626, ERC7535, ERC721A, ERC1155A for optimal efficiency and security.",
 							icon: <Vault />,
 						},
 						{
