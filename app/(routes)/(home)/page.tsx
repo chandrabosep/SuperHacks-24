@@ -3,8 +3,21 @@ import spaceship from "@/public/map.svg";
 import superhack from "@/public/superhack.svg";
 import ThemeButton from "@/components/Button";
 import Link from "next/link";
-import { BoltIcon, CheckIcon, Component, Gem, Github, Linkedin, PartyPopper, ScrollText, Twitter, Users, Vault } from "lucide-react";
+import {
+	BoltIcon,
+	CheckIcon,
+	Component,
+	Gem,
+	Github,
+	Linkedin,
+	PartyPopper,
+	ScrollText,
+	Twitter,
+	Users,
+	Vault,
+} from "lucide-react";
 import localFont from "next/font/local";
+import x from "@/public/x.svg";
 
 const gtHead = localFont({
 	src: "../../../public/fonts/RegularItalic.ttf",
@@ -32,7 +45,7 @@ export default function Home() {
 					</p>
 					<Link href="/dashboard">
 						<ThemeButton className="px-10 py-6">
-							Add Your Project
+							Add Project Proposal
 						</ThemeButton>
 					</Link>
 				</div>
@@ -235,10 +248,15 @@ export default function Home() {
 						Built at SuperHacks24
 					</p>
 				</div>
-				<div className="flex items-center gap-4">
-					<Twitter fill="black" />
-					<Github fill="black" />
-					<Linkedin fill="black" />
+				<div className="flex items-center gap-4 text-lg font-medium">
+					Built by{" "}
+					<Link href={"https://chandrabose.xyz"} className="border-b border-theme-secondary leading-5">
+						Chandra Bose
+					</Link>
+					&
+					<Link href={"https://x.com/muja002"} className="border-b border-theme-secondary leading-5">
+						Mujahid
+					</Link>
 				</div>
 			</div>
 		</main>

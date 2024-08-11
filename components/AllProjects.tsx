@@ -16,7 +16,7 @@ export default function AllProjects() {
 	}, []);
 
 	return (
-		<div className="flex gap-6 min-h-[400px]">
+		<div className="flex flex-wrap gap-6 ">
 			{projects.length === 0 ? (
 				<p>Please create a project</p>
 			) : (

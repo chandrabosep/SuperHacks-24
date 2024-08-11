@@ -139,9 +139,7 @@ export default function DashboardCard({ project }: { project: any }) {
 													className={`mb-6 text-sm font-bold text-center`}
 												>
 													{displayAmount}
-													<span className="text-sm">
-														PTS
-													</span>
+												
 												</p>
 											</div>
 										);

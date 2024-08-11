@@ -4,6 +4,7 @@ import Image from "next/image";
 import localFont from "next/font/local";
 import PoolProject from "@/components/PoolProject";
 import ThemeButton from "@/components/Button";
+import { Input } from "@/components/ui/input";
 
 const gtHead = localFont({
 	src: "../../../../public/fonts/RegularItalic.ttf",
@@ -25,9 +26,12 @@ export default function page() {
 				<PoolProject name="Cosy Cradle" />
 				<PoolProject name="Kapak" />
 			</div>
-			<ThemeButton className="w-1/2 rounded-md border-none bg-[#FFEF61] hover:bg-[#FFEF61]/90 text-theme-foreground/70 mt-auto">
-				Fund the Pool
-			</ThemeButton>
+			<div className="flex flex-col gap-y-2 w-1/2 mx-auto">
+				<Input placeholder="Enter ammount" className="w-full " />
+				<ThemeButton className="w-full rounded-md border-none bg-[#FFEF61] hover:bg-[#FFEF61]/90 text-theme-foreground/70 mt-auto">
+					Fund the Pool
+				</ThemeButton>
+			</div>
 		</div>
 	);
 }

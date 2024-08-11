@@ -1,4 +1,7 @@
 "use client";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import CryptoJS from "crypto-js";
 import { Card, CardContent } from "@/components/ui/card";
 import {
 	Table,
@@ -9,37 +12,48 @@ import {
 	TableCell,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { Info } from "lucide-react";
-import { useEffect, useState } from "react";
 import { client } from "@/lib/sanity";
-
+import { ContractAbi } from "@/contract/seedsphere";
+import { useWriteContract } from "wagmi";
+import { ethers } from "ethers";
 export default function Admin() {
 	const [projects, setProjects] = useState([]);
 
-	// Function to update the allow status of the project
-	const onSubmit = async (projectId: any) => {
+	const { writeContract } = useWriteContract();
+
+	const onSubmit = async (project: any) => {
 		try {
-			const response = await client
-				.patch(projectId)
+			await client
+				.patch(project._id)
 				.set({ allow: true })
 				.commit({
 					headers: {
 						Authorization: `Bearer skiomHVuc1NS6Jhn8Bw9Kv4QACP3Fn3reqix5a1Yecc9FjUQAes2LIRlWBdc6A6cljaqCJV3qiXnPf6yTl00vYupvWCXOabKQpRNbuGUAh7qgtxAMai3EsAYXZBIb6nTkxIzBVbnRPgBxJ96UYN4OjwcooL2zO5neCm8XO7KpvCcMr0YoqeY`,
 					},
 				});
-			console.log("Project updated:", response);
+
+			writeContract({
+				abi: ContractAbi.abi,
+				address: ContractAbi.address as `0x${string}`,
+				functionName: "addOrUpdateProject",
+				args: [
+					project.walletAddress,
+					ethers.utils.formatBytes32String(project.name),
+				],
+			});
 		} catch (error) {
 			console.error("Error updating project:", error);
 		}
 	};
 
 	useEffect(() => {
-		async function getProjects() {
-			const query = `*[_type == "project"]`; // Fetch projects with allow == false
+		const getProjects = async () => {
+			const query = `*[_type == "project"]`;
 			const data = await client.fetch(query);
 			setProjects(data);
-		}
+		};
+
 		getProjects();
 	}, []);
 
@@ -48,7 +62,7 @@ export default function Admin() {
 			<Card className="w-full">
 				<CardContent className="p-4 space-y-2 w-full">
 					<Table className="w-full">
-						<TableHeader className="w-full">
+						<TableHeader>
 							<TableRow>
 								<TableHead>Project</TableHead>
 								<TableHead>Description</TableHead>
@@ -58,7 +72,7 @@ export default function Admin() {
 								</TableHead>
 							</TableRow>
 						</TableHeader>
-						<TableBody className="w-full">
+						<TableBody>
 							{projects.map((project: any) => (
 								<TableRow key={project._id}>
 									<TableCell className="font-medium">
@@ -67,20 +81,15 @@ export default function Admin() {
 									<TableCell>
 										{project.projectDescription}
 									</TableCell>
-									<TableCell className="mx-auto">
-										<Link
-											href={`/explore/${project._id}`}
-											className="mx-auto w-fit"
-										>
+									<TableCell>
+										<Link href={`/explore/${project._id}`}>
 											<Info />
 										</Link>
 									</TableCell>
 									<TableCell className="text-right">
 										<Button
-											onClick={() =>
-												onSubmit(project._id)
-											}
-                                            disabled={project.allow}
+											onClick={() => onSubmit(project)}
+											disabled={project.allow}
 										>
 											Accept
 										</Button>

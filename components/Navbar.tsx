@@ -20,7 +20,8 @@ export default function Navbar() {
 	const { address, isConnected } = useAccount();
 	const adminAddresses = [
 		"0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701",
-		"0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701",
+		"0x709d29dc073F42feF70B6aa751A8D186425b2750",
+		"0xA9ab8933Ff0467D51d13ea2bFECD81504Fc6f15a",
 	];
 
 	return (
@@ -46,9 +47,6 @@ export default function Navbar() {
 				))}
 				{isConnected && (
 					<>
-						<Link href="/dashboard" className="">
-							Dashboard
-						</Link>
 						{adminAddresses
 							.map((addr: any) => addr.toLowerCase())
 							.includes(address?.toLowerCase()) && (
