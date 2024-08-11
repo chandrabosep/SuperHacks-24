@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {ERC4626A, IERC4626A} from "./ERC4626A/ERC4626A.sol";
+import {ERC4626A, IERC4626A} from "./ERC4626AFinal.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import {IPyth} from "@pythnetwork/pyth-sdk-solidity/IPyth.sol";
 import {PythStructs} from "@pythnetwork/pyth-sdk-solidity/PythStructs.sol";
 
@@ -117,6 +117,10 @@ contract SeedSphere is ERC4626A, Ownable, ReentrancyGuard {
         s_isPoolActive = false;
     }
 
+    /**************************
+        STATE UPDATE FUNCTIONS
+    ***************************/
+
     /// @dev Function to fund multiple users with a single transaction.
     /// @param userAddresses Array of user addresses to be funded.
     /// @param priceUpdate Array of price update data from Pyth.
@@ -210,6 +214,8 @@ contract SeedSphere is ERC4626A, Ownable, ReentrancyGuard {
         uint256 depositPerUser = s_poolBalance / numUsers;
 
         for (uint256 i = 0; i < numUsers; ++i) {
+            if (getUserProposalHash(userAddresses[i]) == bytes32(0))
+                revert SeedSphere__UserHasNoActiveProposal();
             s_userBalances[userAddresses[i]] += depositPerUser;
         }
 
@@ -217,6 +223,10 @@ contract SeedSphere is ERC4626A, Ownable, ReentrancyGuard {
 
         emit PoolEnded(s_poolBalance, depositPerUser);
     }
+
+    /**************************
+        SETTER FUNCTIONS
+    ***************************/
 
     /// @dev Function for the owner to set the pool active or inactive.
     /// @param _poolActive Boolean indicating if the pool should be active or inactive.
@@ -269,6 +279,10 @@ contract SeedSphere is ERC4626A, Ownable, ReentrancyGuard {
         s_proposalHashes[userProposalAddress] = newUserProposalHash;
     }
 
+    /**************************
+        HELPER FUNCTIONS
+    ***************************/
+
     /// @dev Function to return the base URI for metadata.
     /// @return The base URI string.
     function _baseURI() internal view virtual override returns (string memory) {
@@ -300,22 +314,22 @@ contract SeedSphere is ERC4626A, Ownable, ReentrancyGuard {
     /// @dev Function to get the total funds in USD for a token ID.
     /// @param id The token ID.
     /// @return The total funds in USD for the token ID.
-    function getTotalFundsInUSD(uint256 id)
-        public
-        view
-        returns (uint256)
-    {
+    function getTotalFundsInUSD(uint256 id) public view returns (uint256) {
         return s_totalFundedUSD[id];
     }
 
     /// @dev Function to check if the pool is active.
     /// @return True if the pool is active, false otherwise.
-    function getIsPoolActive()
-        public
-        view
-        returns (bool)
-    {
+    function getIsPoolActive() public view returns (bool) {
         return s_isPoolActive;
+    }
+
+    function getPythContractAddress() public view returns (address) {
+        return address(s_pyth);
+    }
+
+    function getPriceFeedId() public view returns (bytes32) {
+        return s_priceFeedId;
     }
 
     /// @dev Function to calculate the scaled amount in Wei for 1 USD.
@@ -364,5 +378,54 @@ contract SeedSphere is ERC4626A, Ownable, ReentrancyGuard {
         address owner
     ) public virtual override returns (uint256 id) {
         revert("SeedSphere Not Allow Funders to Withdraw!");
+    }
+
+    /**************************
+        TESTING FUNCTIONS
+    ***************************/
+    function _fund(address[] calldata userAddresses)
+        public
+        payable
+        nonReentrant
+    {
+        uint256 numUsers = userAddresses.length;
+        if (numUsers == 0) revert SeedSphere__NoUsersProvided();
+
+        uint256 totalDeposits = msg.value;
+        if (totalDeposits == 0) revert SeedSphere__TotalDepositTooLow();
+
+        uint256 depositPerUser = totalDeposits / numUsers;
+        if (depositPerUser == 0) revert SeedSphere__DepositPerUserTooLow();
+
+        uint256 tokenId = deposit(msg.value, _msgSender());
+
+        for (uint256 i = 0; i < numUsers; ++i) {
+            if (getUserProposalHash(userAddresses[i]) == bytes32(0))
+                revert SeedSphere__UserHasNoActiveProposal();
+            s_userBalances[userAddresses[i]] += depositPerUser;
+        }
+
+        s_totalFundedUSD[tokenId] += totalDeposits;
+
+        emit Funded(_msgSender(), totalDeposits, tokenId);
+    }
+
+    function _poolFunds() public payable nonReentrant {
+        if (!s_isPoolActive) revert SeedSphere__PoolNotActive();
+
+        uint256 totalDeposits = msg.value;
+
+        s_poolBalance += totalDeposits;
+
+        uint256 tokenId = deposit(msg.value, _msgSender());
+
+        s_totalFundedUSD[tokenId] += totalDeposits * 2;
+
+        emit PoolFunded(_msgSender(), totalDeposits, tokenId);
+    }
+
+    /// @notice Allows the contract owner to withdraw contract balance
+    function withdrawForTesting() public onlyOwner {
+        payable(_msgSender()).transfer(address(this).balance); // Transfer contract balance to owner
     }
 }
