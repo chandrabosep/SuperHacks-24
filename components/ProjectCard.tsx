@@ -5,10 +5,10 @@ import { Card, CardContent } from "./ui/card";
 import { SquareArrowOutUpRight, Triangle } from "lucide-react";
 import Link from "next/link";
 import { useAccount, useWriteContract } from "wagmi";
-import { ethers } from "ethers";
 import { Input } from "./ui/input";
 import { ContractAbi } from "@/contract/seedsphere";
 import { parseEther } from "viem";
+import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
 
 export default function ProjectCard({ project }: { project: any }) {
 	const [flipped, setFlipped] = useState(false);
@@ -16,8 +16,8 @@ export default function ProjectCard({ project }: { project: any }) {
 	const [amount, setAmount] = useState<string>("");
 	const { address } = useAccount();
 
-	const { writeContract } = useWriteContract();
-
+	const { writeContract, error } = useWriteContract();
+	console.log(error);
 	const handleCardClick = () => {
 		setFlipped(!flipped);
 	};
@@ -33,30 +33,34 @@ export default function ProjectCard({ project }: { project: any }) {
 	const handleFundClick = async (e: React.MouseEvent) => {
 		e.stopPropagation();
 		try {
-			// const connection = new EvmPriceServiceConnection(
-			// 	"https://hermes.pyth.network"
-			// );
-			// const priceIds = [
-			// 	"0x7d669ddcdd23d9ef1fa9a9cc022ba055ec900e91c4cb960f3c20429d4447a411" as string,
-			// ];
-			// const priceFeedUpdateData =
-			// 	await connection.getPriceFeedsUpdateData(priceIds);
+			const connection = new EvmPriceServiceConnection(
+				"https://hermes.pyth.network"
+			);
+			const priceIds = [
+				"0x7d669ddcdd23d9ef1fa9a9cc022ba055ec900e91c4cb960f3c20429d4447a411" as string,
+			];
+			const priceFeedUpdateData =
+				await connection.getPriceFeedsUpdateData(priceIds);
 
-			// const pythdata = writeContract({
+			// writeContract({
 			// 	abi: ContractAbi.abi,
 			// 	address: ContractAbi.address as `0x${string}`,
 			// 	functionName: "fund",
 			// 	args: [[address], priceFeedUpdateData],
-			// 	value: parseEther(amount).toBigInt(),
+			// 	value: parseEther(amount),
 			// });
-
-			writeContract({
-				abi: ContractAbi.abi,
-				address: ContractAbi.address as `0x${string}`,
-				functionName: "_fund",
-				args: [[address]],
-				value: parseEther(amount),
-			});
+			console.log("Funding the pool", address, amount);
+			try {
+				writeContract({
+					abi: ContractAbi.abi,
+					address: ContractAbi.address as `0x${string}`,
+					functionName: "_fund",
+					args: [[address]],
+					value: parseEther(amount),
+				});
+			} catch (error) {
+				console.error("Error funding the pool:", error);
+			}
 		} catch (error) {
 			console.error("Error funding the pool:", error);
 		}

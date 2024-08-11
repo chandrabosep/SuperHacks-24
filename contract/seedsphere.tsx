@@ -1,5 +1,5 @@
 export const ContractAbi = {
-	address: "0x4DcB625026b4fA21C894691c51066Da3D03fa774",
+	address: "0xD66D6E1e09Bb6A54f45B906B56a2b93f2F42fe8a",
 	abi: [
 		{
 			inputs: [
@@ -247,11 +247,6 @@ export const ContractAbi = {
 		{
 			inputs: [],
 			name: "SeedSphere__TransferFailed",
-			type: "error",
-		},
-		{
-			inputs: [],
-			name: "SeedSphere__UserHasNoActiveProposal",
 			type: "error",
 		},
 		{
