@@ -6,7 +6,7 @@ async function main() {
   const pythContract = "0x0708325268dF9F66270F1401206434524814508b";
   const pricefeedId =
     "0x385f64d993f7b77d8182ed5003d97c60aa3361f3cecfe711544d2d59165e9bdf";
-  const newOwnerAddress = "0x709d29dc073F42feF70B6aa751A8D186425b2750";
+  const newOwnerAddress = "0xA9ab8933Ff0467D51d13ea2bFECD81504Fc6f15a";
 
   const seedSphere = await hre.ethers.getContractFactory("SeedSphere");
   console.log("Deploying SeedSphere Contract...");
