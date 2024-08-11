@@ -68,7 +68,7 @@ export default function Home() {
 								Submit Your Proposal
 							</div>
 							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
-								Create Proposals Across Blockchains
+								Single Proposals Across Blockchains
 							</h2>
 							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
 								Submit proposals on Celo, Optimism, Base, and
@@ -120,10 +120,10 @@ export default function Home() {
 						</div>
 						<div className="space-y-4 max-w-2xl">
 							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
-								Earn Root Tokens
+								Get a unique NFT
 							</div>
 							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
-								Earn Rewards for Your Support
+								Showcase Contributions with NFT
 							</h2>
 							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
 								Have your contributions securely deposited in
@@ -147,26 +147,26 @@ export default function Home() {
 						</div>
 						<div className="space-y-4 max-w-2xl">
 							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
-								Mint a Bloom NFT
+								Monitor your Funds
 							</div>
 							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
-								Publicly Recognize Your Support
+								Community support across the world
 							</h2>
 							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-								Mint a Bloom NFT to publicly showcase your
-								support for the projects you contribute to.
+								Get your projects the reconization they need
+								from around the world and chains
 							</p>
 							<div className="grid gap-2">
 								<div className="flex items-center gap-2">
 									<CheckIcon className="h-5 w-5 text-green-500" />
 									<p className="text-sm text-muted-foreground">
-										Mint a Bloom NFT
+										Support public projects
 									</p>
 								</div>
 								<div className="flex items-center gap-2">
 									<CheckIcon className="h-5 w-5 text-green-500" />
 									<p className="text-sm text-muted-foreground">
-										Publicly showcase your support
+										Fund projects as a sower
 									</p>
 								</div>
 							</div>
@@ -191,7 +191,7 @@ export default function Home() {
 						{
 							title: "Interoperable On-Chain Funding",
 							description:
-								"Leverage the power of CELO and OP stack chains (OP, BASE, MODE) to access multi-chain funding opportunities seamlessly.",
+								"Leverage the power of superchain maxis (OP, BASE, MODE) to access multi-chain funding opportunities seamlessly.",
 							icon: <ScrollText />,
 						},
 						{
@@ -213,7 +213,7 @@ export default function Home() {
 							icon: <PartyPopper />,
 						},
 						{
-							title: "Unique NFT Rewards for Funders",
+							title: "Unique NFT for Funders",
 							description:
 								"Showcase your contributions with unique NFTs received for your total funding, easily shareable on platforms like X and Farcaster.",
 							icon: <Component />,
@@ -250,11 +250,17 @@ export default function Home() {
 				</div>
 				<div className="flex items-center gap-4 text-lg font-medium">
 					Built by{" "}
-					<Link href={"https://chandrabose.xyz"} className="border-b border-theme-secondary leading-5">
+					<Link
+						href={"https://chandrabose.xyz"}
+						className="border-b border-theme-secondary leading-5"
+					>
 						Chandra Bose
 					</Link>
 					&
-					<Link href={"https://x.com/muja002"} className="border-b border-theme-secondary leading-5">
+					<Link
+						href={"https://x.com/muja002"}
+						className="border-b border-theme-secondary leading-5"
+					>
 						Mujahid
 					</Link>
 				</div>
