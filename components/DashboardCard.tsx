@@ -13,12 +13,12 @@ import {
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 const chartData = [
-	{ month: "January", funded: 3 },
-	{ month: "February", funded: 6.5 },
-	{ month: "March", funded: 5 },
-	{ month: "April", funded: 4 },
-	{ month: "May", funded: 2 },
-	{ month: "June", funded: 4 },
+	{ month: "January", funded: 0 },
+	{ month: "February", funded: 0 },
+	{ month: "March", funded: 0 },
+	{ month: "April", funded: 0 },
+	{ month: "May", funded: 0 },
+	{ month: "June", funded: 0 },
 ];
 
 const chartConfig = {
@@ -63,7 +63,7 @@ export default function DashboardCard({ project }: { project: any }) {
 					</div>
 					{!flipped ? (
 						<>
-							<p className="text-muted-foreground line-clamp-3 min-h-20">
+							<p className="text-muted-foreground line-clamp-3 leading-7 min-h-20">
 								{project?.projectDescription}
 							</p>
 							<div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -108,24 +108,24 @@ export default function DashboardCard({ project }: { project: any }) {
 								{["celo", "optimism", "base", "mode"].map(
 									(network) => {
 										// Calculate the total amount funded for the current network
-										const totalFunded =
-											project?.funders
-												?.filter(
-													(funder: any) =>
-														funder.chain.toLowerCase() ===
-														network
-												)
-												.reduce(
-													(acc: any, funder: any) =>
-														acc +
-														funder.amountFunded,
-													0
-												) || 0;
+										// const totalFunded =
+										// 	project?.funders
+										// 		?.filter(
+										// 			(funder: any) =>
+										// 				funder.chain.toLowerCase() ===
+										// 				network
+										// 		)
+										// 		.reduce(
+										// 			(acc: any, funder: any) =>
+										// 				acc +
+										// 				funder.amountFunded,
+										// 			0
+										// 		) || 0;
 
-										// Add the total funded amount to the initial project points (if any)
-										const displayAmount =
-											(project?.[network] || 0) +
-											totalFunded;
+										// // Add the total funded amount to the initial project points (if any)
+										// const displayAmount =
+										// 	(project?.[network] || 0) +
+										// 	totalFunded;
 
 										return (
 											<div
@@ -138,8 +138,12 @@ export default function DashboardCard({ project }: { project: any }) {
 												<p
 													className={`mb-6 text-sm font-bold text-center`}
 												>
-													{displayAmount}
-												
+													{network === "celo"
+														? localStorage.getItem(
+																"amountFunded"
+														  ) || 0
+														: 0}
+													{/* {displayAmount } */}
 												</p>
 											</div>
 										);

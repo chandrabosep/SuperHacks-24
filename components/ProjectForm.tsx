@@ -80,7 +80,7 @@ export default function ProjectForm() {
 						},
 					}
 				)
-				.then(() => router.push("/create-project"));
+				.then(() => router.push("/dashboard"));
 			console.log("Project created:", response);
 		} catch (error) {
 			console.error("Error creating project:", error);

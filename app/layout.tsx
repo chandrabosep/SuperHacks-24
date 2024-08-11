@@ -6,6 +6,7 @@ import localFont from "next/font/local";
 import { config } from "@/config";
 import Web3ModalProvider from "@/context";
 import Navbar from "@/components/Navbar";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
 	title: "SeedSphere",
@@ -29,6 +30,7 @@ export default function RootLayout({
 				<Web3ModalProvider initialState={initialState}>
 					<Navbar />
 					<div className="py-6">{children}</div>
+					<Toaster />
 				</Web3ModalProvider>
 			</body>
 		</html>

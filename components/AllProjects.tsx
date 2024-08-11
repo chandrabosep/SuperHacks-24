@@ -18,7 +18,7 @@ export default function AllProjects() {
 	return (
 		<div className="flex flex-wrap gap-6 ">
 			{projects.length === 0 ? (
-				<p>Please create a project</p>
+				<p>Loading...</p>
 			) : (
 				projects.map((project: any) => (
 					<ProjectCard key={project._id} project={project} />

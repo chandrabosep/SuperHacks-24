@@ -41,7 +41,11 @@ export default function DashboardProjects() {
 			<div className="w-1/4 Pl-10">
 				<div className="flex flex-col gap-y-4 items-center justify-center w-full h-fit">
 					<p>Fund projects and get this awesome NFT</p>
-					<Image src={nft} alt="alt" className="w-5/6 rounded-xl h-fit" />
+					<Image
+						src={nft}
+						alt="alt"
+						className="w-5/6 rounded-xl h-fit"
+					/>
 					<ShareButtons />
 				</div>
 			</div>
