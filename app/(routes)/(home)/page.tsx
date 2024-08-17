@@ -237,7 +237,7 @@ export default function Home() {
 					))}
 				</div>
 			</div>
-			<div className="flex items-center justify-between border-t w-full pt-4">
+{/* 			<div className="flex items-center justify-between border-t w-full pt-4">
 				<div className="flex items-center gap-2">
 					<Image
 						src={superhack}
@@ -264,7 +264,7 @@ export default function Home() {
 						Mujahid
 					</Link>
 				</div>
-			</div>
+			</div> */}
 		</main>
 	);
 }
