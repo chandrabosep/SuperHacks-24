@@ -58,9 +58,10 @@ module.exports = {
         network: "celoAlfajores",
         chainId: 44787,
         urls: {
-          apiURL: "https://celo-alfajores.blockscout.com/api",
-          browserURL: "https://celo-alfajores.blockscout.com/",
-          // browserURL: "https://explorer.celo.org/alfajores/",
+          // apiURL: "https://celo-alfajores.blockscout.com/api",
+          // browserURL: "https://celo-alfajores.blockscout.com/",
+          apiURL: "https://explorer.celo.org/alfajores/api",
+          browserURL: "https://explorer.celo.org/alfajores/",
         },
       },
       // {
